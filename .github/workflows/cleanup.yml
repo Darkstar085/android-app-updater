@@ -3,17 +3,20 @@ name: Cleanup Old Workflow Runs, Releases, and Tags
 on:
   schedule:
     - cron: "30 4 * * 0"
+
   workflow_dispatch:
 
 jobs:
   cleanup:
+    name: 🧹 Cleanup old data
     runs-on: ubuntu-latest
+
     permissions:
       actions: write
       contents: write
 
     steps:
-      - name: Delete old workflow runs
+      - name: 🗑️ Delete old workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ secrets.TOKEN }}
@@ -21,7 +24,7 @@ jobs:
           retain_days: 1
           keep_minimum_runs: 5
 
-      - name: Delete old releases (keep latest 3, remove tags with them)
+      - name: 🗑️ Delete old releases
         uses: dev-drprasad/delete-older-releases@v0.3.4
         with:
           repo: ${{ github.repository }}
@@ -30,34 +33,62 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Prune old and orphaned tags (beyond latest 3 prebuilts-*)
+      - name: 🏷️ Prune old and orphaned tags
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
+        shell: bash
         run: |
           set -euo pipefail
 
-          # Gather all tags
-          all_tags=$(git ls-remote --tags "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/\^{}//')
+          REPOSITORY="${{ github.repository }}"
+          API="https://api.github.com/repos/${REPOSITORY}"
+
+          # Collect all repository tags.
+          all_tags=$(
+            git ls-remote --tags \
+              "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git" |
+              awk '{print $2}' |
+              sed 's|refs/tags/||' |
+              sed 's/\^{}//'
+          )
+
           echo "Total tags found:"
           echo "$all_tags" | wc -l
 
-          # Keep the newest 3 prebuilts-* tags (sorted by version-like numeric suffix if present)
-          prebuilts_tags=$(echo "$all_tags" | grep -E '^prebuilts-' || true)
-          keep_prebuilts=$(echo "$prebuilts_tags" | sort -r | head -n 3 || true)
+          # Keep the newest three Android app tags.
+          app_tags=$(echo "$all_tags" | grep -E '^android-apps-' || true)
+          keep_app_tags=$(echo "$app_tags" | sort -r | head -n 3 || true)
 
-          # Also keep tags currently attached to the latest 3 releases (already kept by the previous step)
-          releases_json=$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/releases?per_page=100")
-          release_tags=$(echo "$releases_json" | jq -r '.[].tag_name' | sed '/^null$/d' || true)
+          # Keep tags attached to the latest releases.
+          releases_json=$(
+            curl -sS \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "${API}/releases?per_page=100"
+          )
 
-          # Compose keep set
-          keep_set=$(printf "%s\n%s\n" "$keep_prebuilts" "$release_tags" | sed '/^$/d' | sort -u)
+          release_tags=$(
+            echo "$releases_json" |
+              jq -r '.[].tag_name' |
+              sed '/^null$/d' || true
+          )
+
+          # Build the complete keep set.
+          keep_set=$(
+            printf "%s\n%s\n" "$keep_app_tags" "$release_tags" |
+              sed '/^$/d' |
+              sort -u
+          )
 
           echo "Keeping tags:"
-          echo "$keep_set" || true
+          echo "$keep_set"
 
-          # Determine deletable tags: all - keep_set
-          deletable=$(comm -23 <(echo "$all_tags" | sort -u) <(echo "$keep_set" | sort -u) || true)
+          # Everything else is eligible for deletion.
+          deletable=$(
+            comm -23 \
+              <(echo "$all_tags" | sort -u) \
+              <(echo "$keep_set" | sort -u) || true
+          )
 
           if [ -z "${deletable:-}" ]; then
             echo "No tags to delete."
@@ -67,14 +98,19 @@ jobs:
           echo "Deleting tags:"
           echo "$deletable"
 
-          # Delete tags via GitHub API
           while IFS= read -r tag; do
             [ -z "$tag" ] && continue
+
             ref="refs/tags/${tag}"
-            echo "Deleting $ref"
-            curl -sS -X DELETE -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/git/${ref}" \
-              -o /dev/null -w "%{http_code}" | grep -qE '^(204|200)$' || {
-                echo "Warning: failed to delete $ref; continuing."
+            echo "Deleting ${ref}"
+
+            curl -sS -X DELETE \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "${API}/git/${ref}" \
+              -o /dev/null \
+              -w "%{http_code}" |
+              grep -qE '^(204|200)$' || {
+                echo "Warning: failed to delete ${ref}; continuing."
               }
           done <<< "$deletable"

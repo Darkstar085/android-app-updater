@@ -1,0 +1,662 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "name": "ABDownloadManager",
+      "repo": "amir1376/ab-download-manager",
+      "patterns": [
+        "*windows_x64*.exe"
+      ],
+      "exclude": [],
+      "description": "Powerful download manager with multi-threading",
+      "emoji": "📥",
+      "changelog": "https://github.com/amir1376/ab-download-manager/releases/latest"
+    },
+    {
+      "name": "Acode",
+      "repo": "Acode-Foundation/Acode",
+      "patterns": [
+        "*fdroid*.apk"
+      ],
+      "exclude": [],
+      "description": "Lightweight yet powerful code editor",
+      "emoji": "💻",
+      "changelog": "https://github.com/Acode-Foundation/Acode/releases/latest"
+    },
+    {
+      "name": "Aegis",
+      "repo": "beemdevelopment/Aegis",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Modern two-factor authentication app",
+      "emoji": "🔐",
+      "changelog": "https://github.com/beemdevelopment/Aegis/releases/latest"
+    },
+    {
+      "name": "NopeRemote",
+      "repo": "monuk7735/nope-remote",
+      "patterns": [
+        "NopeRemote*.apk"
+      ],
+      "exclude": [],
+      "description": "Open-source universal IR remote control app for Android",
+      "emoji": "📺",
+      "changelog": "https://github.com/monuk7735/nope-remote/releases/latest"
+    },
+    {
+      "name": "Kudu",
+      "repo": "AdventDevInc/kudu",
+      "patterns": [
+        "Kudu-Setup-*.exe"
+      ],
+      "exclude": [],
+      "description": "Open-source system cleaner and security scanner for Windows, macOS and Linux",
+      "emoji": "🧹",
+      "changelog": "https://github.com/AdventDevInc/kudu/releases/latest"
+    },
+    {
+      "name": "SpotiFLAC",
+      "repo": "spotiflacapp/SpotiFLAC-Mobile",
+      "patterns": [
+        "SpotiFLAC-*-arm64.apk"
+      ],
+      "exclude": [],
+      "description": "Open-source music player and lossless audio downloader for Android",
+      "emoji": "🎵",
+      "changelog": "https://github.com/spotiflacapp/SpotiFLAC-Mobile/releases/latest"
+    },
+    {
+      "name": "LibreCuts",
+      "repo": "tharunbirla/LibreCuts",
+      "patterns": [
+        "*arm64*.apk"
+      ],
+      "exclude": [],
+      "description": "Free, open-source video editor for Android",
+      "emoji": "🎬",
+      "changelog": "https://github.com/tharunbirla/LibreCuts/releases/latest"
+    },
+    {
+      "name": "OrganicMaps",
+      "repo": "organicmaps/organicmaps",
+      "patterns": [
+        "OrganicMaps*-web-release.apk"
+      ],
+      "exclude": [],
+      "description": "Privacy-focused offline maps and navigation app",
+      "emoji": "🗺️",
+      "changelog": "https://github.com/organicmaps/organicmaps/releases/latest"
+    },
+    {
+      "name": "AmarokHider",
+      "repo": "deltazefiro/Amarok-Hider",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [
+        "*foss*.apk"
+      ],
+      "description": "Hide apps as your choice",
+      "emoji": "🙈",
+      "changelog": "https://github.com/deltazefiro/Amarok-Hider/releases/latest"
+    },
+    {
+      "name": "Arcticons",
+      "repo": "Arcticons-Team/Arcticons",
+      "patterns": [
+        "*dayNight*.apk"
+      ],
+      "exclude": [],
+      "description": "Modern icon pack and theming app",
+      "emoji": "🎭",
+      "changelog": "https://github.com/Arcticons-Team/Arcticons/releases/latest"
+    },
+    {
+      "name": "Bitwarden",
+      "repo": "bitwarden/android",
+      "patterns": [
+        "*bitwarden-fdroid*.apk"
+      ],
+      "exclude": [],
+      "description": "Open-source password manager with cloud sync",
+      "emoji": "🔑",
+      "changelog": "https://github.com/bitwarden/android/releases/latest"
+    },
+    {
+      "name": "BreezyWeather",
+      "repo": "breezy-weather/breezy-weather",
+      "patterns": [
+        "*freenet*.apk"
+      ],
+      "exclude": [],
+      "description": "Clean, customizable open-source weather app",
+      "emoji": "🌦️",
+      "changelog": "https://github.com/breezy-weather/breezy-weather/releases/latest"
+    },
+    {
+      "name": "Cherrygram",
+      "repo": "arsLan4k1390/Cherrygram",
+      "patterns": [
+        "Cherrygram*universal*.apk"
+      ],
+      "exclude": [
+        "*Huawei*.apk"
+      ],
+      "description": "Enhanced Telegram client with extra features",
+      "emoji": "🍒",
+      "changelog": "https://github.com/arsLan4k1390/Cherrygram/releases/latest"
+    },
+    {
+      "name": "ConverterNOW",
+      "repo": "ferraridamiano/ConverterNOW",
+      "patterns": [
+        "*app-arm64-v8a-release*.apk"
+      ],
+      "exclude": [],
+      "description": "Simple unit and currency converter",
+      "emoji": "🔄",
+      "changelog": "https://github.com/ferraridamiano/ConverterNOW/releases/latest"
+    },
+    {
+      "name": "Cromite",
+      "repo": "uazo/cromite",
+      "patterns": [
+        "*arm64_ChromePublic*.apk"
+      ],
+      "exclude": [],
+      "description": "Bromite-based privacy browser",
+      "emoji": "🌐",
+      "changelog": "https://github.com/uazo/cromite/releases/latest"
+    },
+    {
+      "name": "CpuInfo",
+      "repo": "kamgurgul/cpu-info",
+      "patterns": [
+        "*androidApp*.apk"
+      ],
+      "exclude": [],
+      "description": "Detailed CPU info tool",
+      "emoji": "💻",
+      "changelog": "https://github.com/kamgurgul/cpu-info/releases/latest"
+    },
+    {
+      "name": "DeltaIcons",
+      "repo": "Delta-Icons/android",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [
+        "*foss*.apk"
+      ],
+      "description": "Beautiful, minimal icon pack",
+      "emoji": "🎨",
+      "changelog": "https://github.com/Delta-Icons/android/releases/latest"
+    },
+    {
+      "name": "DotGallery",
+      "repo": "IacobIonut01/Gallery",
+      "patterns": [
+        "*arm64-v8a*.apk"
+      ],
+      "exclude": [
+        "*nomaps*.apk"
+      ],
+      "description": "Jetpack Compose-based photo gallery app",
+      "emoji": "📷",
+      "changelog": "https://github.com/IacobIonut01/Gallery/releases/latest"
+    },
+    {
+      "name": "DuckDuckGo",
+      "repo": "duckduckgo/Android",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Private, tracker-blocking browser",
+      "emoji": "🦆",
+      "changelog": "https://github.com/duckduckgo/Android/releases/latest"
+    },
+    {
+      "name": "Florisboard",
+      "repo": "florisboard/florisboard",
+      "patterns": [
+        "*stable*.apk"
+      ],
+      "exclude": [],
+      "description": "Privacy-friendly Android keyboard",
+      "emoji": "⌨️",
+      "changelog": "https://github.com/florisboard/florisboard/releases/latest"
+    },
+    {
+      "name": "Flip2DND",
+      "repo": "robinsrk/flip_2_dnd",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Flip your phone to toggle Do Not Disturb automatically",
+      "emoji": "🤳",
+      "changelog": "https://github.com/robinsrk/flip_2_dnd/releases/latest"
+    },
+    {
+      "name": "Fossify_Calculator",
+      "repo": "FossifyOrg/Calculator",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Open-source, privacy-friendly calculator by Fossify",
+      "emoji": "🧮",
+      "changelog": "https://github.com/FossifyOrg/Calculator/releases/latest"
+    },
+    {
+      "name": "Fossify_Keyboard",
+      "repo": "FossifyOrg/Keyboard",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Easy keyboard for inserting texts, special characters and numbers",
+      "emoji": "⌨️",
+      "changelog": "https://github.com/FossifyOrg/Keyboard/releases/latest"
+    },
+    {
+      "name": "Fossify_MusicPlayer",
+      "repo": "FossifyOrg/Music-Player",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Modern music player by Fossify",
+      "emoji": "🎶",
+      "changelog": "https://github.com/FossifyOrg/Music-Player/releases/latest"
+    },
+    {
+      "name": "Fossify_Notes",
+      "repo": "FossifyOrg/Notes",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Secure, privacy-focused notes app by Fossify",
+      "emoji": "🗒️",
+      "changelog": "https://github.com/FossifyOrg/Notes/releases/latest"
+    },
+    {
+      "name": "Fossify_VoiceRecorder",
+      "repo": "FossifyOrg/Voice-Recorder",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Simple, privacy-respecting voice recorder by Fossify",
+      "emoji": "🎤",
+      "changelog": "https://github.com/FossifyOrg/Voice-Recorder/releases/latest"
+    },
+    {
+      "name": "Gramophone",
+      "repo": "FoedusProgramme/Gramophone",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Minimalist, elegant music player",
+      "emoji": "🎼",
+      "changelog": "https://github.com/FoedusProgramme/Gramophone/releases/latest"
+    },
+    {
+      "name": "IceravenBrowser",
+      "repo": "fork-maintainers/iceraven-browser",
+      "patterns": [
+        "*v8a*.apk"
+      ],
+      "exclude": [],
+      "description": "Privacy-focused web browser",
+      "emoji": "🦦",
+      "changelog": "https://github.com/fork-maintainers/iceraven-browser/releases/latest"
+    },
+    {
+      "name": "ImageToolbox",
+      "repo": "T8RIN/ImageToolbox",
+      "patterns": [
+        "*v8a*.apk"
+      ],
+      "exclude": [],
+      "description": "All-in-one image editing and viewing app",
+      "emoji": "🖼️",
+      "changelog": "https://github.com/T8RIN/ImageToolbox/releases/latest"
+    },
+    {
+      "name": "LibreTube",
+      "repo": "libre-tube/LibreTube",
+      "patterns": [
+        "app-release.apk"
+      ],
+      "exclude": [],
+      "description": "Open-source YouTube app focusing on privacy",
+      "emoji": "🔒",
+      "changelog": "https://github.com/libre-tube/LibreTube/releases/latest"
+    },
+    {
+      "name": "LocalSend",
+      "repo": "localsend/localsend",
+      "patterns": [
+        "*android-arm64v8.apk"
+      ],
+      "exclude": [],
+      "description": "Secure, local file sharing app",
+      "emoji": "📤",
+      "changelog": "https://github.com/localsend/localsend/releases/latest"
+    },
+    {
+      "name": "LTECleanerFOSS",
+      "repo": "MDP43140/LTECleanerFOSS",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Clean up unnecessary files to free up space",
+      "emoji": "🧹",
+      "changelog": "https://github.com/MDP43140/LTECleanerFOSS/releases/latest"
+    },
+    {
+      "name": "Magisk",
+      "repo": "topjohnwu/Magisk",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Powerful systemless rooting solution",
+      "emoji": "🪄",
+      "changelog": "https://github.com/topjohnwu/Magisk/releases/latest"
+    },
+    {
+      "name": "MicroG_RE",
+      "repo": "WSTxda/MicroG-RE",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "MicroG RE - Enhanced Play Services compatibility",
+      "emoji": "🧩",
+      "changelog": "https://github.com/WSTxda/MicroG-RE/releases/latest"
+    },
+    {
+      "name": "MoeList",
+      "repo": "axiel7/MoeList",
+      "patterns": [
+        "*universal*.apk"
+      ],
+      "exclude": [],
+      "description": "Anime and manga tracking app",
+      "emoji": "📖",
+      "changelog": "https://github.com/axiel7/MoeList/releases/latest"
+    },
+    {
+      "name": "Momogram",
+      "repo": "dic1911/Momogram",
+      "patterns": [
+        "*arm64-v8a*.apk"
+      ],
+      "exclude": [],
+      "description": "Telegram client with privacy and customization features",
+      "emoji": "📱",
+      "changelog": "https://github.com/dic1911/Momogram/releases/latest"
+    },
+    {
+      "name": "Nekogram",
+      "repo": "Nekogram/Nekogram",
+      "patterns": [
+        "*universal*.apk"
+      ],
+      "exclude": [],
+      "description": "Feature-rich Telegram client with enhanced privacy",
+      "emoji": "🐱",
+      "changelog": "https://github.com/Nekogram/Nekogram/releases/latest"
+    },
+    {
+      "name": "Omni",
+      "repo": "FoedusProgramme/Omni",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "All-in-one tool app with Compass, Spirit Level, Ruler and Flashlight",
+      "emoji": "🛠️",
+      "changelog": "https://github.com/FoedusProgramme/Omni/releases/latest"
+    },
+    {
+      "name": "OuterTune",
+      "repo": "OuterTune/OuterTune",
+      "patterns": [
+        "*core*.apk"
+      ],
+      "exclude": [],
+      "description": "A Material 3 YouTube Music client & local music player for Android",
+      "emoji": "🎧",
+      "changelog": "https://github.com/OuterTune/OuterTune/releases/latest"
+    },
+    {
+      "name": "Pixelplay",
+      "repo": "theovilardo/PixelPlay",
+      "patterns": [
+        "*PixelPlay*.apk"
+      ],
+      "exclude": [],
+      "description": "Lightweight music player with Material You design",
+      "emoji": "🎵",
+      "changelog": "https://github.com/theovilardo/PixelPlay/releases/latest"
+    },
+    {
+      "name": "PhonographPlus",
+      "repo": "chr56/Phonograph_Plus",
+      "patterns": [
+        "*ModernStableRelease*.apk"
+      ],
+      "exclude": [],
+      "description": "Enhanced music player fork",
+      "emoji": "🎧",
+      "changelog": "https://github.com/chr56/Phonograph_Plus/releases/latest"
+    },
+    {
+      "name": "PrismFileExplorer",
+      "repo": "Raival-e/Prism-File-Explorer",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Powerful, material design file explorer",
+      "emoji": "🗂️",
+      "changelog": "https://github.com/Raival-e/Prism-File-Explorer/releases/latest"
+    },
+    {
+      "name": "Quantum_Download_Manager",
+      "repo": "PBhadoo/QDM",
+      "patterns": [
+        "*.exe"
+      ],
+      "exclude": [],
+      "description": "A modern, open-source download manager for Windows",
+      "emoji": "📥",
+      "changelog": "https://github.com/PBhadoo/QDM/releases/latest"
+    },
+    {
+      "name": "Shizuku",
+      "repo": "RikkaApps/Shizuku",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Use system APIs directly with adb/root privileges from normal apps",
+      "emoji": "🤖",
+      "changelog": "https://github.com/RikkaApps/Shizuku/releases/latest"
+    },
+    {
+      "name": "RetroMusicPlayer",
+      "repo": "RetroMusicPlayer/RetroMusicPlayer",
+      "patterns": [
+        "*normal*.apk"
+      ],
+      "exclude": [],
+      "description": "No description available",
+      "emoji": "📦",
+      "changelog": "https://github.com/RetroMusicPlayer/RetroMusicPlayer/releases/latest"
+    },
+    {
+      "name": "Morphe_YouTube",
+      "repo": "j-hc/revanced-magisk-module",
+      "patterns": [
+        "youtube*all*.apk"
+      ],
+      "exclude": [],
+      "description": "YouTube with ad-block, background play, sponsor block and more",
+      "emoji": "🎬",
+      "changelog": "https://github.com/MorpheApp/morphe-patches/releases/latest"
+    },
+    {
+      "name": "Morphe_YTMusic",
+      "repo": "j-hc/revanced-magisk-module",
+      "patterns": [
+        "music*v8a*.apk"
+      ],
+      "exclude": [],
+      "description": "YouTube Music with premium unlock, ad-block and advanced playback",
+      "emoji": "🎵",
+      "changelog": "https://github.com/MorpheApp/morphe-patches/releases/latest"
+    },
+    {
+      "name": "Morphe_GooglePhotos",
+      "repo": "j-hc/revanced-magisk-module",
+      "patterns": [
+        "googlephotos*v8a*.apk"
+      ],
+      "exclude": [],
+      "description": "Google Photos with premium/unlocked features",
+      "emoji": "📷",
+      "changelog": "https://github.com/MorpheApp/morphe-patches/releases/latest"
+    },
+    {
+      "name": "Morphe_MicroG",
+      "repo": "MorpheApp/MicroG-RE",
+      "patterns": [
+        "*microg*.apk"
+      ],
+      "exclude": [],
+      "description": "MicroG for Morphe - enables Google sign-in",
+      "emoji": "🧩",
+      "changelog": "https://github.com/MorpheApp/MicroG-RE/releases/latest"
+    },
+    {
+      "name": "Morphe_Manager",
+      "repo": "MorpheApp/morphe-manager",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Manage and install Morphe patches easily",
+      "emoji": "🛠️",
+      "changelog": "https://github.com/MorpheApp/morphe-manager/releases/latest"
+    },
+    {
+      "name": "Sdmaid",
+      "repo": "d4rken-org/sdmaid-se",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Powerful system cleaning tool",
+      "emoji": "🧹",
+      "changelog": "https://github.com/d4rken-org/sdmaid-se/releases/latest"
+    },
+    {
+      "name": "SimpMusic",
+      "repo": "maxrave-dev/SimpMusic",
+      "patterns": [
+        "*foss*universal*.apk"
+      ],
+      "exclude": [],
+      "description": "Lightweight YT music player with Material You support",
+      "emoji": "🎵",
+      "changelog": "https://github.com/maxrave-dev/SimpMusic/releases/latest"
+    },
+    {
+      "name": "Symphony",
+      "repo": "zyrouge/symphony",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Lightweight music player for Android 9+",
+      "emoji": "🎼",
+      "changelog": "https://github.com/zyrouge/symphony/releases/latest"
+    },
+    {
+      "name": "Termux",
+      "repo": "termux/termux-app",
+      "patterns": [
+        "*universal.apk"
+      ],
+      "exclude": [],
+      "description": "Terminal emulator and Linux environment for Android",
+      "emoji": "🖥️",
+      "changelog": "https://github.com/termux/termux-app/releases/latest"
+    },
+    {
+      "name": "ThunderbirdAndroid",
+      "repo": "thunderbird/thunderbird-android",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Official Thunderbird email client for Android",
+      "emoji": "📧",
+      "changelog": "https://github.com/thunderbird/thunderbird-android/releases/latest"
+    },
+    {
+      "name": "VisualCodeSpace",
+      "repo": "Visual-Code-Space/Visual-Code-Space",
+      "patterns": [
+        "*.apk"
+      ],
+      "exclude": [],
+      "description": "Lightweight, feature-rich Android code editor and IDE",
+      "emoji": "💻",
+      "changelog": "https://github.com/Visual-Code-Space/Visual-Code-Space/releases/latest"
+    },
+    {
+      "name": "WeatherMaster",
+      "repo": "PranshulGG/WeatherMaster",
+      "patterns": [
+        "*WeatherMaster*.apk"
+      ],
+      "exclude": [],
+      "description": "Modern weather app with graphs",
+      "emoji": "☁️",
+      "changelog": "https://github.com/PranshulGG/WeatherMaster/releases/latest"
+    },
+    {
+      "name": "XedEditor",
+      "repo": "Xed-Editor/Xed-Editor",
+      "patterns": [
+        "*xed*.apk"
+      ],
+      "exclude": [],
+      "description": "Simple and fast text/code editor",
+      "emoji": "✏️",
+      "changelog": "https://github.com/Xed-Editor/Xed-Editor/releases/latest"
+    },
+    {
+      "name": "Ytdlnis",
+      "repo": "deniscerri/ytdlnis",
+      "patterns": [
+        "YTDLnis*universal*.apk"
+      ],
+      "exclude": [],
+      "description": "YouTube downloader with advanced features",
+      "emoji": "⬇️",
+      "changelog": "https://github.com/deniscerri/ytdlnis/releases/latest"
+    }
+  ]
+}

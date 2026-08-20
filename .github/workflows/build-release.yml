@@ -1,824 +1,166 @@
 name: Build and Release
+
 on:
   workflow_dispatch:
+
   push:
-    branches: [main]
-    paths-ignore: ["*.md", "*.txt"]
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+      - "*.txt"
+
   schedule:
-  - cron: "30 4 * * 0"
+    - cron: "30 4 * * 0"
+
 concurrency:
-  group: prebuilts-build-${{ github.ref }}
+  group: android-app-updater-build-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  GH_TOKEN: ${{ secrets.TOKEN }}
+
 jobs:
   build-release:
+    name: 📦 Build & Release
     runs-on: ubuntu-latest
-    env:
-      ACCESS_TOKEN: ${{ secrets.TOKEN }}
-      GH_TOKEN: ${{ secrets.TOKEN }}
-      ABDOWNLOADER_REPO: "amir1376/ab-download-manager"
-      ACODE_REPO: "Acode-Foundation/Acode"
-      AEGIS_REPO: "beemdevelopment/Aegis"
-      NOPE_REMOTE_REPO: "monuk7735/nope-remote"
-      KUDU_REPO: "AdventDevInc/kudu"
-      SPOTIFLAC_REPO: "spotiflacapp/SpotiFLAC-Mobile"
-      LIBRECUTS_REPO: "tharunbirla/LibreCuts"
-      ORGANIC_MAPS_REPO: "organicmaps/organicmaps"
-      AMAROK_HIDER_REPO: "deltazefiro/Amarok-Hider"
-      ARCTICONS_REPO: "Arcticons-Team/Arcticons"
-      BITWARDEN_REPO: "bitwarden/android"
-      BREEZY_REPO: "breezy-weather/breezy-weather"
-      CHERRYGRAM_REPO: "arsLan4k1390/Cherrygram"
-      CONVERTERNOW_REPO: "ferraridamiano/ConverterNOW"
-      CROMITE_REPO: "uazo/cromite"
-      CPU_INFO_REPO: "kamgurgul/cpu-info"
-      DELTAICONS_REPO: "Delta-Icons/android"
-      DOTGALLERY_REPO: "IacobIonut01/Gallery"
-      DUCKDUCKGO_REPO: "duckduckgo/Android"
-      FLIP2DND_REPO: "robinsrk/flip_2_dnd"
-      FLORISBOARD_REPO: "florisboard/florisboard"
-      FOSSIFY_CALC_REPO: "FossifyOrg/Calculator"
-      FOSSIFY_KEYBOARD_REPO: "FossifyOrg/Keyboard"
-      FOSSIFY_MUSIC_REPO: "FossifyOrg/Music-Player"
-      FOSSIFY_NOTES_REPO: "FossifyOrg/Notes"
-      FOSSIFY_VR_REPO: "FossifyOrg/Voice-Recorder"
-      GRAMOPHONE_REPO: "FoedusProgramme/Gramophone"
-      ICERAVEN_REPO: "fork-maintainers/iceraven-browser"
-      IMAGETOOLBOX_REPO: "T8RIN/ImageToolbox"
-      LIBRETUBE_REPO: "libre-tube/LibreTube"
-      LOCAL_SEND_REPO: "localsend/localsend"
-      LTECLEANER_REPO: "MDP43140/LTECleanerFOSS"
-      MAGISK_REPO: "topjohnwu/Magisk"
-      MICROG_RE_REPO: "WSTxda/MicroG-RE"
-      MICROG_REPO: "MorpheApp/MicroG-RE"
-      MOELIST_REPO: "axiel7/MoeList"
-      MOMOGRAM_REPO: "dic1911/Momogram"
-      NEKOGRAM_REPO: "Nekogram/Nekogram"
-      OMNI_REPO: "FoedusProgramme/Omni"
-      OUTERTUNE_REPO: "OuterTune/OuterTune"
-      PIXELPLAY_REPO: "theovilardo/PixelPlay"
-      PHONOGRAPHPLUS_REPO: "chr56/Phonograph_Plus"
-      PRISM_REPO: "Raival-e/Prism-File-Explorer"
-      QDM_REPO: "PBhadoo/QDM"
-      RIKKAAPPS_SHIZUKU_REPO: "RikkaApps/Shizuku"
-      RETROMUSIC_REPO: "RetroMusicPlayer/RetroMusicPlayer"
-      MORPHE_MANAGER_REPO: "MorpheApp/morphe-manager"
-      MORPHE_REPO: "j-hc/revanced-magisk-module"
-      SDMAID_REPO: "d4rken-org/sdmaid-se"
-      SIMP_MUSIC_REPO: "maxrave-dev/SimpMusic"
-      SYMPHONY_REPO: "zyrouge/symphony"
-      TERMUX_REPO: "termux/termux-app"
-      THUNDERBIRD_REPO: "thunderbird/thunderbird-android"
-      VCS_REPO: "Visual-Code-Space/Visual-Code-Space"
-      WEATHERMASTER_REPO: "PranshulGG/WeatherMaster"
-      XED_EDITOR_REPO: "Xed-Editor/Xed-Editor"
-      YTDLNIS_REPO: "deniscerri/ytdlnis"
+
     steps:
-      - name: Checkout
+      # ─────────────────────────────────────────────────────────────
+      # Setup
+      # ─────────────────────────────────────────────────────────────
+      - name: 📥 Checkout repository
         uses: actions/checkout@v5
-      - name: Set up JDK 17
+
+      - name: ☕ Set up Java 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 17
-      - name: Install aapt and GitHub CLI
+          java-version: "17"
+
+      - name: 🧰 Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y aapt gh
-      - name: Weekly random day gate
+          sudo apt-get install -y aapt gh jq
+
+      - name: 🔎 Validate app configuration
+        run: python3 .github/scripts/validate_apps.py
+
+      # ─────────────────────────────────────────────────────────────
+      # Scheduling
+      # ─────────────────────────────────────────────────────────────
+      - name: 📅 Weekly random-day gate
+        id: gate
+        shell: bash
         run: |
+          set -euo pipefail
+
           WEEK=$(date +%Y-%U)
-
-          if [ -f .run_week ]; then
-          STORED_WEEK=$(cut -d: -f1 .run_week)
-          STORED_DAY=$(cut -d: -f2 .run_week)
-          fi
-
-          if [ "$STORED_WEEK" != "$WEEK" ]; then
-          STORED_DAY=$((RANDOM % 7))
-          echo "$WEEK:$STORED_DAY" > .run_week
-          echo "Random run day this week: $STORED_DAY"
-          else
-          echo "Using stored day: $STORED_DAY"
-          fi
-
           TODAY=$(date +%w)
+          STORED_WEEK=""
+          STORED_DAY=""
 
-          if [ "$TODAY" != "$STORED_DAY" ]; then
-          echo "Not today's random day → exiting"
-          exit 0
+          if [[ -f .run_week ]]; then
+            STORED_WEEK=$(cut -d: -f1 .run_week)
+            STORED_DAY=$(cut -d: -f2 .run_week)
           fi
-      - name: Download all apps
+
+          if [[ "$STORED_WEEK" != "$WEEK" ]]; then
+            STORED_DAY=$((RANDOM % 7))
+            echo "$WEEK:$STORED_DAY" > .run_week
+            echo "New random run day: $STORED_DAY"
+          else
+            echo "Using stored run day: $STORED_DAY"
+          fi
+
+          if [[ "$TODAY" != "$STORED_DAY" && "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Not the selected day. Nothing to do."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ─────────────────────────────────────────────────────────────
+      # Download + processing
+      # ─────────────────────────────────────────────────────────────
+      - name: 📦 Download & process all apps
+        if: steps.gate.outputs.run == 'true'
+        run: python3 .github/scripts/update_apps.py
+
+      # ─────────────────────────────────────────────────────────────
+      # Release metadata
+      # ─────────────────────────────────────────────────────────────
+      - name: 🧾 Prepare release metadata
+        if: steps.gate.outputs.run == 'true'
         run: |
-          set +e
-          echo "::group::Download AB Download Manager"
-          gh release download --repo ${{ env.ABDOWNLOADER_REPO }} --pattern "*windows_x64*.exe" || true
-          echo "::endgroup::Download AB Download Manager"
-          echo "::group::Download Acode"
-          gh release download --repo ${{ env.ACODE_REPO }} --pattern "*fdroid*.apk" || true
-          echo "::endgroup::Download Acode"
-          echo "::group::Download Aegis"
-          gh release download --repo ${{ env.AEGIS_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Aegis"
-          echo "::group::Download NopeRemote"
-          gh release download --repo ${{ env.NOPE_REMOTE_REPO }} --pattern "NopeRemote*.apk" || true
-          echo "::endgroup::Download NopeRemote"
-          echo "::group::Download Kudu"
-          gh release download --repo ${{ env.KUDU_REPO }} --pattern "Kudu-Setup-*.exe" || true
-          echo "::endgroup::Download Kudu"
-          echo "::group::Download SpotiFLAC"
-          gh release download --repo ${{ env.SPOTIFLAC_REPO }} --pattern "SpotiFLAC-*-arm64.apk" || true
-          echo "::endgroup::Download SpotiFLAC"
-          echo "::group::Download LibreCuts"
-          gh release download --repo ${{ env.LIBRECUTS_REPO }} --pattern "*arm64*.apk" || true
-          echo "::endgroup::Download LibreCuts"
-          echo "::group::Download Organic Maps"
-          gh release download --repo ${{ env.ORGANIC_MAPS_REPO }} --pattern "OrganicMaps*-web-release.apk" || true
-          echo "::endgroup::Download Organic Maps"
-          echo "::group::Download Amarok Hider"
-          gh release download --repo ${{ env.AMAROK_HIDER_REPO }} --pattern "*.apk" || true
-          rm -f *foss*.apk || true
-          echo "::endgroup::Download Amarok Hider"
-          echo "::group::Download Arcticons"
-          gh release download --repo ${{ env.ARCTICONS_REPO }} --pattern "*dayNight*.apk" || true
-          echo "::endgroup::Download Arcticons"
-          echo "::group::Download Bitwarden"
-          gh release download --repo ${{ env.BITWARDEN_REPO }} --pattern "*bitwarden-fdroid*.apk" || true
-          echo "::endgroup::Download Bitwarden"
-          echo "::group::Download Breezy Weather"
-          gh release download --repo ${{ env.BREEZY_REPO }} --pattern "*freenet*.apk" || true
-          echo "::endgroup::Download Breezy Weather"
-          echo "::group::Download Cherrygram"
-          gh release download --repo ${{ env.CHERRYGRAM_REPO }} --pattern "Cherrygram*universal*.apk" || true
-          rm -f *Huawei*.apk || true
-          echo "::endgroup::Download Cherrygram"
-          echo "::group::Download ConverterNOW"
-          gh release download --repo ${{ env.CONVERTERNOW_REPO }} --pattern "*app-arm64-v8a-release*.apk" || true
-          echo "::endgroup::Download ConverterNOW"
-          echo "::group::Download Cromite APK (arm64)"
-          gh release download --repo ${{ env.CROMITE_REPO }} --pattern "*arm64_ChromePublic*.apk" || true
-          echo "::endgroup::Download Cromite APK (arm64)"
-          echo "::group::Download CpuInfo"
-          gh release download --repo ${{ env.CPU_INFO_REPO }} --pattern "*androidApp*.apk" || true
-          echo "::endgroup::Download CpuInfo"
-          echo "::group::Download DeltaIcons"
-          gh release download --repo ${{ env.DELTAICONS_REPO }} --pattern "*.apk" || true
-          rm -f *foss*.apk || true
-          echo "::endgroup::Download DeltaIcons"
-          echo "::group::Download DotGallery (arm64-v8a) and Remove nomaps variant"
-          gh release download --repo ${{ env.DOTGALLERY_REPO }} --pattern "*arm64-v8a*.apk" || true
-          rm -f *nomaps*.apk || true
-          echo "::endgroup::Download DotGallery (arm64-v8a) and Remove nomaps variant"
-          echo "::group::Download DuckDuckGo"
-          gh release download --repo ${{ env.DUCKDUCKGO_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download DuckDuckGo"
-          echo "::group::Download Florisboard"
-          gh release download --repo ${{ env.FLORISBOARD_REPO }} --pattern "*stable*.apk" || true
-          echo "::endgroup::Download Florisboard"
-          echo "::group::Download Flip 2 DND APK and Rename APK"
-          rm -f ./*.apk
-          if gh release download --repo ${{ env.FLIP2DND_REPO }} --pattern "*.apk" --clobber; then
-            APK=$(find . -maxdepth 1 -type f -name "*.apk" | head -n 1)
-            if [ -n "$APK" ]; then mv "$APK" Flip2DND.apk; else echo "⚠️ Flip2DND: APK asset not found"; fi
-          else
-            echo "⚠️ Flip2DND: no APK asset matched"
-          fi
-          echo "::endgroup::Download Flip 2 DND APK and Rename APK"
-          echo "::group::Download Fossify Calculator"
-          gh release download --repo ${{ env.FOSSIFY_CALC_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Fossify Calculator"
-          echo "::group::Download Fossify Keyboard"
-          gh release download --repo ${{ env.FOSSIFY_KEYBOARD_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Fossify Keyboard"
-          echo "::group::Download Fossify Music Player"
-          gh release download --repo ${{ env.FOSSIFY_MUSIC_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Fossify Music Player"
-          echo "::group::Download Fossify Notes"
-          gh release download --repo ${{ env.FOSSIFY_NOTES_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Fossify Notes"
-          echo "::group::Download Fossify Voice Recorder"
-          gh release download --repo ${{ env.FOSSIFY_VR_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Fossify Voice Recorder"
-          echo "::group::Download Gramophone"
-          gh release download --repo ${{ env.GRAMOPHONE_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Gramophone"
-          echo "::group::Download Iceraven Browser"
-          gh release download --repo ${{ env.ICERAVEN_REPO }} --pattern "*v8a*.apk" || true
-          echo "::endgroup::Download Iceraven Browser"
-          echo "::group::Download ImageToolbox"
-          gh release download --repo ${{ env.IMAGETOOLBOX_REPO }} --pattern "*v8a*.apk" || true
-          echo "::endgroup::Download ImageToolbox"
-          echo "::group::Download LibreTube"
-          gh release download --repo ${{ env.LIBRETUBE_REPO }} --pattern "app-release.apk" || true
-          echo "::endgroup::Download LibreTube"
-          echo "::group::Download LocalSend"
-          gh release download --repo ${{ env.LOCAL_SEND_REPO }} --pattern "*android-arm64v8.apk" || true
-          echo "::endgroup::Download LocalSend"
-          echo "::group::Download LTECleanerFOSS and Rename APK"
-          rm -f ./*.apk
-          if gh release download --repo ${{ env.LTECLEANER_REPO }} --pattern "*.apk" --clobber; then
-            APK=$(find . -maxdepth 1 -type f -name "*.apk" | head -n 1)
-            if [ -n "$APK" ]; then mv "$APK" LTECleanerFOSS.apk; else echo "⚠️ LTECleanerFOSS: APK asset not found"; fi
-          else
-            echo "⚠️ LTECleanerFOSS: no APK asset matched"
-          fi
-          echo "::endgroup::Download LTECleanerFOSS and Rename APK"
-          echo "::group::Download Magisk APK"
-          gh release download --repo ${{ env.MAGISK_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Magisk APK"
-          echo "::group::Download MicroG RE APK"
-          gh release download --repo ${{ env.MICROG_RE_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download MicroG RE APK"
-          echo "::group::Download MoeList"
-          gh release download --repo ${{ env.MOELIST_REPO }} --pattern "*universal*.apk" || true
-          echo "::endgroup::Download MoeList"
-          echo "::group::Download Momogram"
-          gh release download --repo ${{ env.MOMOGRAM_REPO }} --pattern "*arm64-v8a*.apk" || true
-          echo "::endgroup::Download Momogram"
-          echo "::group::Download Nekogram"
-          gh release download --repo ${{ env.NEKOGRAM_REPO }} --pattern "*universal*.apk" || true
-          echo "::endgroup::Download Nekogram"
-          echo "::group::Download Omni APK and Rename APK"
-          rm -f ./*.apk
-          if gh release download --repo ${{ env.OMNI_REPO }} --pattern "*.apk" --clobber; then
-            APK=$(find . -maxdepth 1 -type f -name "*.apk" | head -n 1)
-            if [ -n "$APK" ]; then mv "$APK" Omni.apk; else echo "⚠️ Omni: APK asset not found"; fi
-          else
-            echo "⚠️ Omni: no APK asset matched"
-          fi
-          echo "::endgroup::Download Omni APK and Rename APK"
-          echo "::group::Download OuterTune"
-          gh release download --repo ${{ env.OUTERTUNE_REPO }} --pattern "*core*.apk" || true
-          echo "::endgroup::Download OuterTune"
-          echo "::group::Download Pixelplay"
-          gh release download --repo ${{ env.PIXELPLAY_REPO }} --pattern "*PixelPlay*.apk" || true
-          echo "::endgroup::Download Pixelplay"
-          echo "::group::Download Phonograph Plus"
-          gh release download --repo ${{ env.PHONOGRAPHPLUS_REPO }} --pattern "*ModernStableRelease*.apk" || true
-          echo "::endgroup::Download Phonograph Plus"
-          echo "::group::Download Prism File Explorer and Rename APK"
-          rm -f ./*.apk
-          if gh release download --repo ${{ env.PRISM_REPO }} --pattern "*.apk" --clobber; then
-            APK=$(find . -maxdepth 1 -type f -name "*.apk" | head -n 1)
-            if [ -n "$APK" ]; then mv "$APK" PrismFileExplorer.apk; else echo "⚠️ PrismFileExplorer: APK asset not found"; fi
-          else
-            echo "⚠️ PrismFileExplorer: no APK asset matched"
-          fi
-          echo "::endgroup::Download Prism File Explorer and Rename APK"
-          echo "::group::Download QDM"
-          gh release download --repo ${{ env.QDM_REPO }} --pattern "*.exe" || true
-          echo "::endgroup::Download QDM"
-          echo "::group::Download RikkaApps Shizuku"
-          gh release download --repo ${{ env.RIKKAAPPS_SHIZUKU_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download RikkaApps Shizuku"
-          echo "::group::Download Retro Music Player"
-          gh release download --repo ${{ env.RETROMUSIC_REPO }} --pattern "*normal*.apk" || true
-          echo "::endgroup::Download Retro Music Player"
-          echo "::group::Download Morphe YouTube"
-          gh release download --repo ${{ env.MORPHE_REPO }} --pattern "youtube*all*.apk" || true
-          echo "::endgroup::Download Morphe YouTube"
-          echo "::group::Download Morphe YT Music"
-          gh release download --repo ${{ env.MORPHE_REPO }} --pattern "music*v8a*.apk" || true
-          echo "::endgroup::Download Morphe YT Music"
-          echo "::group::Download Morphe Google Photos"
-          gh release download --repo ${{ env.MORPHE_REPO }} --pattern "googlephotos*v8a*.apk" || true
-          echo "::endgroup::Download Morphe Google Photos"
-          echo "::group::Download Morphe MicroG"
-          gh release download --repo ${{ env.MICROG_REPO }} --pattern "*microg*.apk" || true
-          echo "::endgroup::Download Morphe MicroG"
-          echo "::group::Download Morphe Manager APK"
-          gh release download --repo ${{ env.MORPHE_MANAGER_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Morphe Manager APK"
-          echo "::group::Download Sdmaid Cleaner"
-          gh release download --repo ${{ env.SDMAID_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Sdmaid Cleaner"
-          echo "::group::Download Simp Music"
-          gh release download --repo ${{ env.SIMP_MUSIC_REPO }} --pattern "*foss*universal*.apk" || true
-          echo "::endgroup::Download Simp Music"
-          echo "::group::Download Symphony"
-          gh release download --repo "${{ env.SYMPHONY_REPO }}" --pattern "*.apk" || true
-          echo "::endgroup::Download Symphony"
-          echo "::group::Download Thunderbird Android"
-          gh release download --repo ${{ env.THUNDERBIRD_REPO }} --pattern "*.apk" || true
-          echo "::endgroup::Download Thunderbird Android"
-          echo "::group::Download Termux APK"
-          gh release download --repo ${{ env.TERMUX_REPO }} --pattern "*universal.apk" || true
-          echo "::endgroup::Download Termux APK"
-          echo "::group::Download Visual Code Space"
-          rm -f ./*.apk
-          if gh release download --repo ${{ env.VCS_REPO }} --pattern "*.apk" --clobber; then
-            APK=$(find . -maxdepth 1 -type f -name "*.apk" | head -n 1)
-            if [ -n "$APK" ]; then mv "$APK" VisualCodeSpace.apk; else echo "⚠️ VisualCodeSpace: APK asset not found"; fi
-          else
-            echo "⚠️ VisualCodeSpace: no APK asset matched"
-          fi
-          echo "::endgroup::Download Visual Code Space"
-          echo "::group::Download WeatherMaster APK"
-          gh release download --repo ${{ env.WEATHERMASTER_REPO }} --pattern "*WeatherMaster*.apk" || true
-          echo "::endgroup::Download WeatherMaster APK"
-          echo "::group::Download Xed Editor"
-          gh release download --repo ${{ env.XED_EDITOR_REPO }} --pattern "*xed*.apk" || true
-          echo "::endgroup::Download Xed Editor"
-          echo "::group::Download YTDlnis"
-          gh release download --repo ${{ env.YTDLNIS_REPO }} --pattern "YTDLnis*universal*.apk" || true
-          echo "::endgroup::Download YTDlnis"
-      - name: Process downloaded apps
-        id: versioning
-        run: |
-          set -e
-          echo "::group::Backup previous versions"
-          cp latest-apk-versions.txt old-apk-versions.txt 2>/dev/null || touch old-apk-versions.txt
-          echo "::endgroup::"
-          echo "::group::Version and rename APKs and EXE"
-          UPDATED_APPS=""
-          declare -A OLD
-          if [ -f old-apk-versions.txt ]; then
-            while IFS=: read -r app ver; do
-              app="$(echo "$app" | xargs)"
-              ver="$(echo "$ver" | xargs)"
-              [ -z "$app" ] && continue
-              OLD["$app"]="$ver"
-            done < old-apk-versions.txt
-          fi
+          python3 .github/scripts/prepare_release.py
 
-          declare -A apps=(
-            ["*windows_x64*.exe"]="ABDownloadManager"
-            ["*fdroid*.apk"]="Acode"
-            ["*aegis*.apk"]="Aegis"
-            ["NopeRemote*.apk"]="NopeRemote"
-            ["Kudu-Setup-*.exe"]="Kudu"
-            ["SpotiFLAC-*-arm64.apk"]="SpotiFLAC"
-            ["*LibreCuts*arm64*.apk"]="LibreCuts"
-            ["OrganicMaps*-web-release.apk"]="OrganicMaps"
-            ["*Amarok*.apk"]="AmarokHider"
-            ["*Arcticons*.apk"]="Arcticons"
-            ["*bitwarden-fdroid*.apk"]="Bitwarden"
-            ["*breezy-weather*.apk"]="BreezyWeather"
-            ["Cherrygram*universal*.apk"]="Cherrygram"
-            ["*app-arm64-v8a-release*.apk"]="ConverterNOW"
-            ["*androidApp*.apk"]="CpuInfo"
-            ["*arm64_ChromePublic*.apk"]="Cromite"
-            ["*delta*.apk"]="DeltaIcons"
-            ["*Gallery*arm64-v8a*.apk"]="DotGallery"
-            ["*duckduckgo*.apk"]="DuckDuckGo"
-            ["*florisboard*.apk"]="Florisboard"
-            ["Flip2DND*.apk"]="Flip2DND"
-            ["*calculator*.apk"]="Fossify_Calculator"
-            ["*keyboard*.apk"]="Fossify_Keyboard"
-            ["*musicplayer*.apk"]="Fossify_MusicPlayer"
-            ["*notes*.apk"]="Fossify_Notes"
-            ["*voicerecorder*.apk"]="Fossify_VoiceRecorder"
-            ["*Gramophone*.apk"]="Gramophone"
-            ["*iceraven*.apk"]="IceravenBrowser"
-            ["*image-toolbox*.apk"]="ImageToolbox"
-            ["*android-arm64v8.apk"]="LocalSend"
-            ["app-release.apk"]="LibreTube"
-            ["LTECleanerFOSS.apk"]="LTECleanerFOSS"
-            ["*Magisk*.apk"]="Magisk"
-            ["*moelist*.apk"]="MoeList"
-            ["*microg_release*.apk"]="MicroG_RE"
-            ["*Momo*v8a*.apk"]="Momogram"
-            ["*Nekogram*universal*.apk"]="Nekogram"
-            ["Omni.apk"]="Omni"
-            ["*OuterTune*.apk"]="OuterTune"
-            ["*PixelPlay*.apk"]="Pixelplay"
-            ["PhonographPlus*.apk"]="PhonographPlus"
-            ["Photok*.apk"]="Photok"
-            ["PrismFileExplorer.apk"]="PrismFileExplorer"
-            ["Quantum*.exe"]="Quantum_Download_Manager"
-            ["*youtube*all*.apk"]="Morphe_YouTube"
-            ["*music*v8a*.apk"]="Morphe_YTMusic"
-            ["*googlephotos*v8a*.apk"]="Morphe_GooglePhotos"
-            ["*microg*.apk"]="Morphe_MicroG"
-            ["*morphe-manager*.apk"]="Morphe_Manager"
-            ["*sdmse*.apk"]="Sdmaid"
-            ["SimpMusic*.apk"]="SimpMusic"
-            ["*symphony*.apk"]="Symphony"
-            ["*shizuku*.apk"]="Shizuku"
-            ["*termux*.apk"]="Termux"
-            ["*k9mail*.apk"]="ThunderbirdAndroid"
-            ["*VisualCodeSpace*.apk"]="VisualCodeSpace"
-            ["*WeatherMaster*.apk"]="WeatherMaster"
-            ["xed*.apk"]="XedEditor"
-            ["YTD*.apk"]="Ytdlnis"
-          )
+          echo ""
+          echo "Updated apps: $UPDATED_COUNT"
+          echo "Skipped: $SKIPPED_COUNT"
+          echo "Download failures: $FAILED_COUNT"
+          echo ""
+          cat .update-results.json
 
-          for pattern in "${!apps[@]}"; do
-            NEW_APK=$(ls $pattern 2>/dev/null | head -n 1 || true)
-            APP=${apps[$pattern]}
-            [ -z "$NEW_APK" ] && continue
+      - name: ⏹️ Stop when there are no updates
+        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES != 'true'
+        run: echo "No new app versions. No release will be created."
 
-            # Skip checks for EXE; extract version from filename only
-            if [[ "$NEW_APK" == *.exe ]]; then
-              NEW_VER=$(echo "$NEW_APK" | sed -nE 's/.*[-_]([0-9]+\.[0-9]+\.[0-9]+).*\.exe/\1/p')
-              [ -z "$NEW_VER" ] && NEW_VER="unknown"
-              OLD_VER="${OLD[$APP]:-}"
-              if [ -n "$OLD_VER" ] && [ "$OLD_VER" = "$NEW_VER" ]; then
-                echo "$APP unchanged (v$NEW_VER) — skipping"
-                rm -f "$NEW_APK"
-                continue
-              fi
-              NEW_FILE="${APP}_v${NEW_VER}.exe"
-              mv "$NEW_APK" "$NEW_FILE"
-              UPDATED_APPS+="$APP(v$NEW_VER) "
-              echo "Will update $APP → v$NEW_VER (was: ${OLD_VER:-none})"
-              continue
-            fi
-
-            # Regular APK version extraction
-            NEW_VER=$(aapt dump badging "$NEW_APK" | grep versionName | sed -E "s/.*versionName='([^']+)'.*/\1/")
-            OLD_VER="${OLD[$APP]:-}"
-            if [ -n "$OLD_VER" ] && [ "$OLD_VER" = "$NEW_VER" ]; then
-              echo "$APP unchanged (v$NEW_VER) — skipping"
-              rm -f "$NEW_APK"
-              continue
-            fi
-            NEW_FILE="${APP}_v${NEW_VER}.apk"
-            mv "$NEW_APK" "$NEW_FILE"
-            UPDATED_APPS+="$APP(v$NEW_VER) "
-            echo "Will update $APP → v$NEW_VER (was: ${OLD_VER:-none})"
-          done
-
-          if [ -n "$UPDATED_APPS" ]; then
-            echo "UPDATED_APPS=$UPDATED_APPS" >> $GITHUB_ENV
-          else
-            echo "UPDATED_APPS=" >> $GITHUB_ENV
-          fi
-          echo "::endgroup::"
-      - name: Stop if no updates
-        if: env.UPDATED_APPS == ''
-        run: |
-          echo "No updates found. Exiting."
-          exit 0
-      - name: Prepare release metadata
-        if: env.UPDATED_APPS != ''
-        run: |
-          echo "::group::Generate captions.txt"
-          declare -A old_versions
-          if [ -f old-apk-versions.txt ]; then
-            while IFS=: read -r app ver; do
-              app=$(echo "$app" | xargs)
-              ver=$(echo "$ver" | xargs)
-              [ -z "$app" ] && continue
-              old_versions["$app"]="$ver"
-            done < old-apk-versions.txt
-          fi
-          
-          declare -A app_desc=(
-            ["ABDownloadManager"]="Powerful download manager with multi-threading"
-            ["Acode"]="Lightweight yet powerful code editor"
-            ["Aegis"]="Modern two-factor authentication app"
-            ["NopeRemote"]="Open-source universal IR remote control app for Android"
-            ["Kudu"]="Open-source system cleaner and security scanner for Windows, macOS and Linux"
-            ["SpotiFLAC"]="Open-source music player and lossless audio downloader for Android"
-            ["LibreCuts"]="Free, open-source video editor for Android"
-            ["OrganicMaps"]="Privacy-focused offline maps and navigation app"
-            ["AmarokHider"]="Hide apps as your choice"
-            ["Arcticons"]="Modern icon pack and theming app"
-            ["Bitwarden"]="Open-source password manager with cloud sync"
-            ["BreezyWeather"]="Clean, customizable open-source weather app"
-            ["Cherrygram"]="Enhanced Telegram client with extra features"
-            ["ConverterNOW"]="Simple unit and currency converter"
-            ["Cromite"]="Bromite-based privacy browser"
-            ["CpuInfo"]="Detailed CPU info tool"
-            ["DeltaIcons"]="Beautiful, minimal icon pack"
-            ["DotGallery"]="Jetpack Compose-based photo gallery app"
-            ["DuckDuckGo"]="Private, tracker-blocking browser"
-            ["Florisboard"]="Privacy-friendly Android keyboard"
-            ["Flip2DND"]="Flip your phone to toggle Do Not Disturb automatically"
-            ["Fossify_Calculator"]="Open-source, privacy-friendly calculator by Fossify"
-            ["Fossify_MusicPlayer"]="Modern music player by Fossify"
-            ["Fossify_Notes"]="Secure, privacy-focused notes app by Fossify"
-            ["Fossify_VoiceRecorder"]="Simple, privacy-respecting voice recorder by Fossify"
-            ["Fossify_Keyboard"]="Easy keyboard for inserting texts, special characters and numbers"
-            ["Gramophone"]="Minimalist, elegant music player"
-            ["IceravenBrowser"]="Privacy-focused web browser"
-            ["LibreTube"]="Open-source YouTube app focusing on privacy"
-            ["LocalSend"]="Secure, local file sharing app"
-            ["LTECleanerFOSS"]="Clean up unnecessary files to free up space"
-            ["Magisk"]="Powerful systemless rooting solution"
-            ["MicroG_RE"]="MicroG RE - Enhanced Play Services compatibility"
-            ["MoeList"]="Anime and manga tracking app"
-            ["Momogram"]="Telegram client with privacy and customization features"
-            ["Nekogram"]="Feature-rich Telegram client with enhanced privacy"
-            ["Omni"]="All-in-one tool app with Compass, Spirit Level, Ruler and Flashlight"
-            ["Pixelplay"]="Lightweight music player with Material You design"
-            ["PhonographPlus"]="Enhanced music player fork"
-            ["Photok"]="Simple photo gallery app"
-            ["PrismFileExplorer"]="Powerful, material design file explorer"
-            ["Morphe_GooglePhotos"]="Google Photos with premium/unlocked features"
-            ["Morphe_MicroG"]="MicroG for Morphe - enables Google sign-in"
-            ["Morphe_YTMusic"]="YouTube Music with premium unlock, ad-block and advanced playback"
-            ["Morphe_YouTube"]="YouTube with ad-block, background play, sponsor block and more"
-            ["Morphe_Manager"]="Manage and install Morphe patches easily"
-            ["Sdmaid"]="Powerful system cleaning tool"
-            ["Shizuku"]="Use system APIs directly with adb/root privileges from normal apps"
-            ["SimpMusic"]="Lightweight YT music player with Material You support"
-            ["Symphony"]="Lightweight music player for Android 9+"
-            ["Termux"]="Terminal emulator and Linux environment for Android"
-            ["ThunderbirdAndroid"]="Official Thunderbird email client for Android"
-            ["VisualCodeSpace"]="Lightweight, feature-rich Android code editor and IDE"
-            ["WeatherMaster"]="Modern weather app with graphs"
-            ["XedEditor"]="Simple and fast text/code editor"
-            ["Ytdlnis"]="YouTube downloader with advanced features"
-            ["ImageToolbox"]="All-in-one image editing and viewing app"
-            ["OuterTune"]="A Material 3 YouTube Music client & local music player for Android"
-            ["Quantum_Download_Manager"]="A modern, open-source download manager for Windows"
-          
-          )
-          
-          declare -A app_emoji=(
-            ["ABDownloadManager"]="📥"
-            ["Acode"]="💻"
-            ["Aegis"]="🔐"
-            ["NopeRemote"]="📺"
-            ["Kudu"]="🧹"
-            ["SpotiFLAC"]="🎵"
-            ["LibreCuts"]="🎬"
-            ["OrganicMaps"]="🗺️"
-            ["AmarokHider"]="🙈"
-            ["Arcticons"]="🎭"
-            ["Bitwarden"]="🔑"
-            ["BreezyWeather"]="🌦️"
-            ["Cherrygram"]="🍒"
-            ["ConverterNOW"]="🔄"
-            ["Cromite"]="🌐"
-            ["CpuInfo"]="💻"
-            ["DeltaIcons"]="🎨"
-            ["DotGallery"]="📷"
-            ["DuckDuckGo"]="🦆"
-            ["Florisboard"]="⌨️"
-            ["Flip2DND"]="🤳"
-            ["Fossify_Calculator"]="🧮"
-            ["Fossify_Keyboard"]="⌨️"
-            ["Fossify_MusicPlayer"]="🎶"
-            ["Fossify_Notes"]="🗒️"
-            ["Fossify_VoiceRecorder"]="🎤"
-            ["Gramophone"]="🎼"
-            ["IceravenBrowser"]="🦦"
-            ["LibreTube"]="🔒"
-            ["LocalSend"]="📤"
-            ["LTECleanerFOSS"]="🧹"
-            ["Magisk"]="🪄"
-            ["MicroG_RE"]="🧩"
-            ["MoeList"]="📖"
-            ["Momogram"]="📱"
-            ["Nekogram"]="🐱"
-            ["Omni"]="🛠️"
-            ["Pixelplay"]="🎵"
-            ["PhonographPlus"]="🎧"
-            ["Photok"]="🖼️"
-            ["PrismFileExplorer"]="🗂️"
-            ["Morphe_GooglePhotos"]="📷"
-            ["Morphe_Manager"]="🛠️"
-            ["Morphe_MicroG"]="🧩"
-            ["Morphe_YTMusic"]="🎵"
-            ["Morphe_YouTube"]="🎬"
-            ["Sdmaid"]="🧹"
-            ["Shizuku"]="🤖"
-            ["SimpMusic"]="🎵"
-            ["Symphony"]="🎼"
-            ["Termux"]="🖥️"
-            ["ThunderbirdAndroid"]="📧"
-            ["VisualCodeSpace"]="💻"
-            ["WeatherMaster"]="☁️"
-            ["XedEditor"]="✏️"
-            ["Ytdlnis"]="⬇️"
-            ["ImageToolbox"]="🖼️"
-            ["OuterTune"]="🎧"
-            ["Quantum_Download_Manager"]="📥"
-          )
-          
-          declare -A app_repo=(
-            ["ABDownloadManager"]="https://github.com/amir1376/ab-download-manager/releases/latest"
-            ["Acode"]="https://github.com/Acode-Foundation/Acode/releases/latest"
-            ["Aegis"]="https://github.com/beemdevelopment/Aegis/releases/latest"
-            ["NopeRemote"]="https://github.com/monuk7735/nope-remote/releases/latest"
-            ["Kudu"]="https://github.com/AdventDevInc/kudu/releases/latest"
-            ["SpotiFLAC"]="https://github.com/spotiflacapp/SpotiFLAC-Mobile/releases/latest"
-            ["LibreCuts"]="https://github.com/tharunbirla/LibreCuts/releases/latest"
-            ["OrganicMaps"]="https://github.com/organicmaps/organicmaps/releases/latest"
-            ["AmarokHider"]="https://github.com/deltazefiro/Amarok-Hider/releases/latest"
-            ["Arcticons"]="https://github.com/Arcticons-Team/Arcticons/releases/latest"
-            ["Bitwarden"]="https://github.com/bitwarden/android/releases/latest"
-            ["BreezyWeather"]="https://github.com/breezy-weather/breezy-weather/releases/latest"
-            ["Cherrygram"]="https://github.com/arsLan4k1390/Cherrygram/releases/latest"
-            ["ConverterNOW"]="https://github.com/ferraridamiano/ConverterNOW/releases/latest"
-            ["Cromite"]="https://github.com/uazo/cromite/releases/latest"
-            ["CpuInfo"]="https://github.com/kamgurgul/cpu-info/releases/latest"
-            ["DeltaIcons"]="https://github.com/Delta-Icons/android/releases/latest"
-            ["DotGallery"]="https://github.com/IacobIonut01/Gallery/releases/latest"
-            ["DuckDuckGo"]="https://github.com/duckduckgo/Android/releases/latest"
-            ["Florisboard"]="https://github.com/florisboard/florisboard/releases/latest"
-            ["Flip2DND"]="https://github.com/robinsrk/flip_2_dnd/releases/latest"
-            ["Fossify_Calculator"]="https://github.com/FossifyOrg/Calculator/releases/latest"
-            ["Fossify_Keyboard"]="https://github.com/FossifyOrg/Keyboard/releases/latest"
-            ["Fossify_MusicPlayer"]="https://github.com/FossifyOrg/Music-Player/releases/latest"
-            ["Fossify_Notes"]="https://github.com/FossifyOrg/Notes/releases/latest"
-            ["Fossify_VoiceRecorder"]="https://github.com/FossifyOrg/Voice-Recorder/releases/latest"
-            ["Gramophone"]="https://github.com/FoedusProgramme/Gramophone/releases/latest"
-            ["IceravenBrowser"]="https://github.com/fork-maintainers/iceraven-browser/releases/latest"
-            ["LibreTube"]="https://github.com/libre-tube/LibreTube/releases/latest"
-            ["LocalSend"]="https://github.com/localsend/localsend/releases/latest"
-            ["LTECleanerFOSS"]="https://github.com/MDP43140/LTECleanerFOSS/releases/latest"
-            ["Magisk"]="https://github.com/topjohnwu/Magisk/releases/latest"
-            ["MicroG_RE"]="https://github.com/WSTxda/MicroG-RE/releases/latest"
-            ["MoeList"]="https://github.com/axiel7/MoeList/releases/latest"
-            ["Momogram"]="https://github.com/dic1911/Momogram/releases/latest"
-            ["Nekogram"]="https://github.com/Nekogram/Nekogram/releases/latest"
-            ["Omni"]="https://github.com/FoedusProgramme/Omni/releases/latest"
-            ["Pixelplay"]="https://github.com/theovilardo/PixelPlay/releases/latest"
-            ["PhonographPlus"]="https://github.com/chr56/Phonograph_Plus/releases/latest"
-            ["Photok"]="https://github.com/leonlatsch/photok/releases/latest"
-            ["PrismFileExplorer"]="https://github.com/Raival-e/Prism-File-Explorer/releases/latest"
-            ["Morphe_GooglePhotos"]="https://github.com/MorpheApp/morphe-patches/releases/latest"
-            ["Morphe_MicroG"]="https://github.com/MorpheApp/MicroG-RE/releases/latest"
-            ["Morphe_YTMusic"]="https://github.com/MorpheApp/morphe-patches/releases/latest"
-            ["Morphe_YouTube"]="https://github.com/MorpheApp/morphe-patches/releases/latest"
-            ["Morphe_Manager"]="https://github.com/MorpheApp/morphe-manager/releases/latest"
-            ["Sdmaid"]="https://github.com/d4rken-org/sdmaid-se/releases/latest"
-            ["Shizuku"]="https://github.com/RikkaApps/Shizuku/releases/latest"
-            ["SimpMusic"]="https://github.com/maxrave-dev/SimpMusic/releases/latest"
-            ["Symphony"]="https://github.com/zyrouge/symphony/releases/latest"
-            ["Termux"]="https://github.com/termux/termux-app/releases/latest"
-            ["ThunderbirdAndroid"]="https://github.com/thunderbird/thunderbird-android/releases/latest"
-            ["VisualCodeSpace"]="https://github.com/Visual-Code-Space/Visual-Code-Space/releases/latest"
-            ["WeatherMaster"]="https://github.com/PranshulGG/WeatherMaster/releases/latest"
-            ["XedEditor"]="https://github.com/Xed-Editor/Xed-Editor/releases/latest"
-            ["Ytdlnis"]="https://github.com/deniscerri/ytdlnis/releases/latest"
-            ["ImageToolbox"]="https://github.com/T8RIN/ImageToolbox/releases/latest"
-            ["OuterTune"]="https://github.com/OuterTune/OuterTune/releases/latest"
-            ["Quantum_Download_Manager"]="https://github.com/PBhadoo/QDM/releases/latest"
-          )
-          
-          rm -f captions.txt
-          for apkfile in *_v*.apk *_v*.exe; do
-            FILE=$(basename "$apkfile")
-            APP="${FILE%%_v*}"
-            EMOJI="${app_emoji[$APP]:-📦}"
-            DESC="${app_desc[$APP]:-No description available}"
-            NEW_VER=$(echo "$FILE" | sed -E 's/.*_v(.*)\.(apk|exe)/\1/')
-            OLD_VER="${old_versions[$APP]:-}"
-          
-            if [ "$OLD_VER" = "$NEW_VER" ]; then
-              continue
-            fi
-          
-            if [ -z "$OLD_VER" ]; then
-              VERSION="🆕 Version: $NEW_VER"
-            else
-              VERSION="🚀 Version: $OLD_VER → $NEW_VER"
-            fi
-          
-            CHANGELOG="Changelog: <a href='${app_repo[$APP]}'>Open</a>"
-          
-            echo "📦 <b>File name</b> – ${FILE}
-              ${EMOJI} ${DESC}
-          ${VERSION}
-          
-          ${CHANGELOG}
-              ----" >> captions.txt
-          done
-          echo "::endgroup::Generate captions.txt"
-          echo "::group::Build release notes"
-          declare -A old_versions
-          if [ -f old-apk-versions.txt ]; then
-            while IFS=: read -r app ver; do
-              app="$(echo "$app" | xargs)"
-              ver="$(echo "$ver" | xargs)"
-              [ -z "$app" ] && continue
-              old_versions["$app"]="$ver"
-            done < old-apk-versions.txt
-          fi
-          
-          declare -A new_versions
-          for apk in *_v*.apk *_v*.exe; do
-            APP="${apk%%_v*}"
-            VER="$(echo "$apk" | sed -E 's/.*_v(.*)\.(apk|exe)/\1/')"
-            new_versions["$APP"]="$VER"
-          done
-          
-          NOTES=""
-          for app in "${!new_versions[@]}"; do
-            OLD="${old_versions[$app]}"
-            NEW="${new_versions[$app]}"
-            if [ -z "$OLD" ]; then
-              NOTES+="$app: $NEW"$'\n'
-            elif [ "$OLD" != "$NEW" ]; then
-              NOTES+="$app: $OLD → $NEW"$'\n'
-            fi
-          done
-          
-          if [ -z "$NOTES" ]; then
-            if ls *_v*.apk *_v*.exe 1>/dev/null 2>&1; then
-              for apk in *_v*.apk *_v*.exe; do
-                APP="${apk%%_v*}"
-                VER="$(echo "$apk" | sed -E 's/.*_v(.*)\.(apk|exe)/\1/')"
-                NOTES+="$APP: $VER"$'\n'
-              done
-            else
-              NOTES="No app versions updated."
-            fi
-          fi
-          
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo -e "${NOTES//\\n/$'\n'}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          echo "::endgroup::Build release notes"
-          echo "::group::Build release name (IST)"
-          export TZ=Asia/Kolkata
-          echo "REL_NAME=Prebuilts Update - $(date +'%Y-%m-%d %H:%M %Z')" >> $GITHUB_ENV
-          echo "::endgroup::Build release name (IST)"
-          echo "::group::Write latest versions"
-          declare -A LATEST
-          
-          if [ -f latest-apk-versions.txt ]; then
-            while IFS=: read -r app ver; do
-              app=$(echo "$app" | xargs)
-              ver=$(echo "$ver" | xargs)
-              LATEST["$app"]="$ver"
-            done < latest-apk-versions.txt
-          fi
-          
-          for apk in *_v*.apk *_v*.exe; do
-            APP="${apk%%_v*}"
-            VER="$(echo "$apk" | sed -E 's/.*_v(.*)\.(apk|exe)/\1/')"
-            LATEST["$APP"]="$VER"
-          done
-          
-          for app in "${!LATEST[@]}"; do
-            echo "$app: ${LATEST[$app]}"
-          done | sort > latest-apk-versions.txt
-          echo "::endgroup::Write latest versions"
-      - name: Create release
-        if: env.UPDATED_APPS != ''
+      # ─────────────────────────────────────────────────────────────
+      # GitHub Release
+      # ─────────────────────────────────────────────────────────────
+      - name: 🚀 Create GitHub Release
+        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: prebuilts-${{ github.run_id }}
-          name: ${{ env.REL_NAME }}
+          tag_name: android-apps-${{ github.run_id }}
+          name: 📦 Android Apps Update — ${{ env.REL_NAME }}
           body: ${{ env.RELEASE_NOTES }}
           files: |
             *_v*.apk
             *_v*.exe
             captions.txt
+
+      # ─────────────────────────────────────────────────────────────
+      # Repository state
+      # ─────────────────────────────────────────────────────────────
+      - name: 📝 Commit update state
+        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
         env:
-          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN }}
-      - name: Commit update summary
-        if: env.UPDATED_APPS != ''
-        env:
-          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        shell: bash
         run: |
           set -euo pipefail
 
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           export TZ=Asia/Kolkata
-          COMMIT_DATE="$(date +'%Y-%m-%d')"
-          COMMIT_TIME="$(date +'%H:%M %Z')"
+          DATE=$(date +'%Y-%m-%d')
+          TIME=$(date +'%H:%M IST')
 
-          declare -A OLD_VERSIONS
-          if [ -f old-apk-versions.txt ]; then
-            while IFS=: read -r app ver; do
-              app="$(echo "$app" | xargs)"
-              ver="$(echo "$ver" | xargs)"
-              [ -z "$app" ] && continue
-              OLD_VERSIONS["$app"]="$ver"
-            done < old-apk-versions.txt
-          fi
+          cat > commit-body.md <<EOF
+          📦 Android App Updater
 
-          UPDATE_LINES=""
-          UPDATED_COUNT=0
-          for file in *_v*.apk *_v*.exe; do
-            [ -f "$file" ] || continue
-            APP="${file%%_v*}"
-            NEW_VER="$(echo "$file" | sed -E 's/.*_v(.*)\.(apk|exe)/\1/')"
-            OLD_VER="${OLD_VERSIONS[$APP]:-}"
+          📅 Date: $DATE
+          🕐 Time: $TIME
 
-            if [ -n "$OLD_VER" ] && [ "$OLD_VER" != "$NEW_VER" ]; then
-              UPDATE_LINES+="- $APP: $OLD_VER → $NEW_VER"$'\n'
-            else
-              UPDATE_LINES+="- $APP: $NEW_VER (new)"$'\n'
-            fi
-            UPDATED_COUNT=$((UPDATED_COUNT + 1))
-          done
+          ✅ Updated apps ($UPDATED_COUNT):
+          $UPDATED_LIST
 
-          COMMIT_BODY=$(cat <<EOF
-          📦 Prebuilts Update
-
-          📅 Date: ${COMMIT_DATE}
-          🕐 Time: ${COMMIT_TIME}
-
-          ✅ Updated apps (${UPDATED_COUNT}):
-          ${UPDATE_LINES}
-          📁 Updated files:
-          - latest-apk-versions.txt
-          - captions.txt
-          - .run_week
+          ⚠️ Download failures: $FAILED_COUNT
+          ⏭️ Skipped/unchanged: $SKIPPED_COUNT
 
           🤖 Automated by GitHub Actions
           EOF
-          )
 
           git add latest-apk-versions.txt captions.txt .run_week
-          git commit -m "📦 Prebuilts Update — ${COMMIT_DATE} [skip ci]" -m "$COMMIT_BODY" || echo "No changes to commit"
+          git commit \
+            -m "📦 Android Apps Update — $DATE [skip ci]" \
+            -F commit-body.md \
+            || echo "No state changes to commit"
+
           git push origin main

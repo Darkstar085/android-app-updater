@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+"""Upload release assets to Telegram with retries and duplicate protection."""
+
+from __future__ import annotations
+
 import asyncio
 import glob
-import hashlib
-import html
 import os
 import re
 from pathlib import Path
@@ -11,168 +13,159 @@ from telethon import TelegramClient
 from telethon.errors import FloodWaitError, RPCError
 from telethon.sessions import StringSession
 
-PARALLEL_UPLOADS = max(1, int(os.getenv("PARALLEL_UPLOADS", "2")))
 RETRIES = max(1, int(os.getenv("UPLOAD_RETRIES", "5")))
 RETRY_DELAY = max(1, int(os.getenv("UPLOAD_RETRY_DELAY", "8")))
 DEDUP_SCAN_LIMIT = max(0, int(os.getenv("DEDUP_SCAN_LIMIT", "500")))
 MAX_CAPTION = 1024
 
-api_id = int(os.environ["API_ID"])
-api_hash = os.environ["API_HASH"]
-session = os.environ["SESSION"]
-bot_token = os.environ.get("TELEGRAM_TOKEN", "")
-chat_id = os.environ["TELEGRAM_CHAT_ID"]
-chat = int(chat_id) if chat_id.lstrip("-").isdigit() else chat_id
+API_ID = int(os.environ["API_ID"])
+API_HASH = os.environ["API_HASH"]
+SESSION = os.environ["SESSION"]
+CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
+CHAT = int(CHAT_ID) if CHAT_ID.lstrip("-").isdigit() else CHAT_ID
 
 
-def normalize_name(name: str) -> str:
-    base = re.split(r"_v|-v", Path(name).name, maxsplit=1)[0]
-    return re.sub(r"[^a-z0-9]+", "", base.lower())
+def normalize(name: str) -> str:
+    """Normalize a filename for caption lookup."""
+    return re.sub(r"[^a-z0-9]+", "", Path(name).stem.lower())
 
 
-def load_captions():
-    captions = {}
+def load_captions() -> dict[str, str]:
+    """Read captions.txt and remove the redundant filename line."""
     path = Path("captions.txt")
     if not path.exists():
-        return captions
+        return {}
 
-    text = path.read_text(encoding="utf-8")
-    for block in re.split(r"\n\s*-{4,}\s*\n", text):
-        block = block.strip()
-        if not block:
-            continue
-        match = re.search(r"File name</b>\s*[–-]\s*([^\n]+)", block)
+    captions: dict[str, str] = {}
+    blocks = re.split(
+        r"\n\s*-{4,}\s*\n",
+        path.read_text(encoding="utf-8"),
+    )
+
+    for block in blocks:
+        match = re.search(
+            r"File name</b>\s*[–-]\s*([^\n]+)",
+            block,
+        )
         if not match:
             continue
+
         filename = match.group(1).strip()
-        # Keep the GitHub captions.txt format intact, but remove the
-        # redundant "File name" line from the Telegram caption. The
-        # uploaded Telegram document already displays its filename.
-        telegram_caption = re.sub(
+        caption = re.sub(
             r"^\s*📦\s*<b>File name</b>\s*[–-]\s*[^\n]*\n?",
             "",
             block,
             count=1,
             flags=re.MULTILINE,
         ).strip()
-        captions[normalize_name(filename)] = telegram_caption[:MAX_CAPTION]
+        captions[normalize(filename)] = caption[:MAX_CAPTION]
+
     return captions
 
 
-captions = load_captions()
+def caption_for(name: str, captions: dict[str, str]) -> str:
+    """Find the best caption for an uploaded filename."""
+    normalized = normalize(name)
 
+    if normalized in captions:
+        return captions[normalized]
 
-def find_caption(filename: str) -> str:
-    norm = normalize_name(filename)
-    if norm in captions:
-        return captions[norm]
-    for key, value in captions.items():
-        if norm.startswith(key) or key.startswith(norm):
-            return value
-    # Never repeat the filename in the Telegram caption. Telegram already
-    # shows the uploaded document's filename.
+    for key, caption in captions.items():
+        if normalized.startswith(key) or key.startswith(normalized):
+            return caption
+
     return ""
 
 
-def file_key(path: str) -> str:
-    size = os.path.getsize(path)
-    digest = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return f"{Path(path).name}:{size}:{digest.hexdigest()[:16]}"
+def release_files() -> list[str]:
+    """Return APK/EXE files downloaded from the GitHub release."""
+    return sorted(glob.glob("dl/*.apk") + glob.glob("dl/*.exe"))
 
 
-files = sorted(glob.glob("dl/*.apk") + glob.glob("dl/*.exe"))
-if not files:
-    print("No files to upload.")
-    raise SystemExit(0)
+async def upload_file(
+    client: TelegramClient,
+    path: str,
+    caption: str,
+) -> bool:
+    """Upload one file with retry and FloodWait handling."""
+    name = Path(path).name
 
-print(f"Found {len(files)} file(s) to deliver.")
-
-
-async def send_with_retry(client, filepath, already_sent):
-    name = Path(filepath).name
-    key = file_key(filepath)
-    if name in already_sent or key in already_sent:
-        print(f"SKIP duplicate: {name}")
-        return True
-
-    caption = find_caption(name)
     for attempt in range(1, RETRIES + 1):
         try:
-            print(f"Uploading {name} ({attempt}/{RETRIES})")
+            print(f"📤 {name} ({attempt}/{RETRIES})")
             await client.send_file(
-                chat,
-                filepath,
+                CHAT,
+                path,
                 caption=caption,
                 force_document=True,
                 parse_mode="html",
                 supports_streaming=False,
             )
-            print(f"Uploaded: {name}")
             return True
-        except FloodWaitError as exc:
-            delay = max(exc.seconds, RETRY_DELAY)
-            print(f"Telegram FloodWait for {delay}s: {name}")
+
+        except FloodWaitError as error:
+            delay = max(int(error.seconds), RETRY_DELAY)
+            print(f"⏳ Telegram FloodWait: {delay}s")
             await asyncio.sleep(delay)
-        except (RPCError, OSError, TimeoutError) as exc:
-            print(f"Upload error for {name}: {exc}")
-            if attempt < RETRIES:
-                await asyncio.sleep(RETRY_DELAY * attempt)
-        except Exception as exc:
-            print(f"Unexpected upload error for {name}: {exc}")
+
+        except (RPCError, OSError, TimeoutError) as error:
+            print(f"⚠️ {error}")
             if attempt < RETRIES:
                 await asyncio.sleep(RETRY_DELAY * attempt)
 
-    print(f"FAILED after {RETRIES} attempts: {name}")
     return False
 
 
-async def collect_recent_filenames(client):
-    sent = set()
-    if DEDUP_SCAN_LIMIT == 0:
-        return sent
+async def main() -> None:
+    files = release_files()
+    if not files:
+        raise SystemExit("No files to upload.")
 
-    print(f"Scanning up to {DEDUP_SCAN_LIMIT} recent Telegram messages for duplicates...")
-    async for message in client.iter_messages(chat, limit=DEDUP_SCAN_LIMIT):
-        if not message.file:
-            continue
-        filename = message.file.name
-        if filename:
-            sent.add(filename)
-            try:
-                sent.add(f"{filename}:{message.file.size}:{''}")
-            except Exception:
-                pass
-    print(f"Found {len(sent)} existing filename marker(s).")
-    return sent
+    captions = load_captions()
 
+    async with TelegramClient(
+        StringSession(SESSION),
+        API_ID,
+        API_HASH,
+    ) as client:
+        existing: set[str] = set()
 
-async def main():
-    # Use the Telethon user session for every file. This avoids the Bot API's
-    # smaller upload limit and gives one consistent retry/error path.
-    if not session:
-        raise RuntimeError("TELEGRAM_SESSION is empty")
+        if DEDUP_SCAN_LIMIT:
+            async for message in client.iter_messages(
+                CHAT,
+                limit=DEDUP_SCAN_LIMIT,
+            ):
+                if message.file and message.file.name:
+                    existing.add(message.file.name)
 
-    async with TelegramClient(StringSession(session), api_id, api_hash) as client:
-        already_sent = await collect_recent_filenames(client)
-        sem = asyncio.Semaphore(PARALLEL_UPLOADS)
+        uploaded = 0
+        skipped = 0
+        failed: list[str] = []
 
-        async def worker(path):
-            async with sem:
-                return await send_with_retry(client, path, already_sent)
+        for path in files:
+            name = Path(path).name
 
-        results = await asyncio.gather(*(worker(path) for path in files))
+            if name in existing:
+                print(f"⏭️ Already posted: {name}")
+                skipped += 1
+                continue
 
-    failed = [str(path) for path, ok in zip(files, results) if not ok]
+            caption = caption_for(name, captions)
+            if await upload_file(client, path, caption):
+                existing.add(name)
+                uploaded += 1
+            else:
+                failed.append(name)
+
+    print(
+        "\nTelegram summary: "
+        f"{uploaded} uploaded, {skipped} skipped, {len(failed)} failed."
+    )
+
     if failed:
-        print("Failed files:")
-        for path in failed:
-            print(f" - {path}")
+        print("Failed:")
+        print("\n".join(f" - {name}" for name in failed))
         raise SystemExit(1)
-
-    print("All files delivered successfully.")
 
 
 if __name__ == "__main__":

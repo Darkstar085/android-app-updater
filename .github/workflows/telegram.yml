@@ -2,11 +2,13 @@ name: Telegram Delivery
 
 on:
   workflow_run:
-    workflows: ["Build and Release"]
-    types: [completed]
+    workflows:
+      - Build and Release
+    types:
+      - completed
 
 concurrency:
-  group: prebuilts-telegram-${{ github.event.workflow_run.id }}
+  group: android-app-updater-telegram-${{ github.event.workflow_run.id }}
   cancel-in-progress: false
 
 permissions:
@@ -14,33 +16,44 @@ permissions:
 
 jobs:
   send-telegram:
+    name: 📲 Send updated apps
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     env:
       GH_TOKEN: ${{ secrets.TOKEN }}
-      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       API_ID: ${{ secrets.TELEGRAM_API_ID }}
       API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
       SESSION: ${{ secrets.TELEGRAM_SESSION }}
-      TAG: prebuilts-${{ github.event.workflow_run.id }}
+      TAG: android-apps-${{ github.event.workflow_run.id }}
 
     steps:
-      - name: Checkout repo
+      # ─────────────────────────────────────────────────────────────
+      # Setup
+      # ─────────────────────────────────────────────────────────────
+      - name: 📥 Checkout repository
         uses: actions/checkout@v5
 
-      - name: Install dependencies
+      - name: 🧰 Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip gh
-          python3 -m pip install --disable-pip-version-check --no-cache-dir telethon tgcrypto
+          python3 -m pip install \
+            --disable-pip-version-check \
+            --no-cache-dir \
+            telethon \
+            tgcrypto
 
-      - name: Wait for release to become available
+      # ─────────────────────────────────────────────────────────────
+      # Find release
+      # ─────────────────────────────────────────────────────────────
+      - name: ⏳ Wait for release to become available
         id: release
         shell: bash
         run: |
           set -euo pipefail
+
           echo "Waiting for release: ${TAG}"
 
           for attempt in $(seq 1 30); do
@@ -49,18 +62,23 @@ jobs:
               echo "found=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
+
             echo "Release not available yet (attempt ${attempt}/30). Sleeping 10s..."
             sleep 10
           done
 
-          echo "No release was created for this successful build (likely no app updates). Nothing to send."
+          echo "No release was created for this successful build. Nothing to send."
           echo "found=false" >> "$GITHUB_OUTPUT"
 
-      - name: Download release assets
+      # ─────────────────────────────────────────────────────────────
+      # Download release assets
+      # ─────────────────────────────────────────────────────────────
+      - name: 📥 Download release assets
         if: steps.release.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
+
           rm -rf dl
           mkdir -p dl
 
@@ -73,6 +91,7 @@ jobs:
 
           shopt -s nullglob
           files=(dl/*.apk dl/*.exe)
+
           if [ "${#files[@]}" -eq 0 ]; then
             echo "Release contains no app files. Nothing to send."
             exit 0
@@ -82,10 +101,13 @@ jobs:
             cp dl/captions.txt captions.txt
           fi
 
-          printf 'Downloaded files:\n'
+          echo "Downloaded files:"
           printf ' - %s\n' "${files[@]}"
 
-      - name: Upload apps to Telegram
+      # ─────────────────────────────────────────────────────────────
+      # Telegram delivery
+      # ─────────────────────────────────────────────────────────────
+      - name: 📲 Upload apps to Telegram
         if: steps.release.outputs.found == 'true'
         shell: bash
         run: |
