@@ -101,9 +101,10 @@ jobs:
 
           if [[ "${HAS_UPDATES:-false}" == "true" ]]; then
             printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n' "$DATE" "$TIME" > commit-body.md
-            printf '✅ Updated apps (%s):\n%s\n\n' "$UPDATED_COUNT" "$UPDATED_LIST" >> commit-body.md
+            printf 'Updated %s apps successfully.\n\n' "$UPDATED_COUNT" >> commit-body.md
           else
-            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n🔄 Checked all configured apps and saved the latest version state.\n\n' "$DATE" "$TIME" > commit-body.md
+            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n' "$DATE" "$TIME" > commit-body.md
+            printf 'Checked all configured apps and saved the latest version state.\n\n' >> commit-body.md
           fi
 
           printf '⚠️ Download failures: %s\n⏭️ Skipped/unchanged: %s\n\n🤖 Automated by GitHub Actions\n\nSigned-off-by: S I P U N <sipunkumar85@gmail.com>\n' "${FAILED_COUNT:-0}" "${SKIPPED_COUNT:-0}" >> commit-body.md
