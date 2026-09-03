@@ -19,10 +19,28 @@ DEDUP_SCAN_LIMIT = max(0, int(os.getenv("DEDUP_SCAN_LIMIT", "500")))
 MAX_CAPTION = 1024
 
 API_ID = int(os.environ["API_ID"])
-API_HASH = os.environ["API_HASH"]
-SESSION = os.environ["SESSION"]
-CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
-CHAT = int(CHAT_ID) if CHAT_ID.lstrip("-").isdigit() else CHAT_ID
+API_HASH = os.environ["API_HASH"].strip()
+SESSION = os.environ["SESSION"].strip()
+CHAT_ID = os.environ["TELEGRAM_CHAT_ID"].strip()
+
+
+def resolve_chat(value: str):
+    """Normalize Telegram chat IDs, usernames, and t.me links."""
+    value = value.strip()
+    if not value:
+        raise ValueError("TELEGRAM_CHAT_ID is empty")
+
+    if value.startswith(("https://t.me/", "http://t.me/")):
+        value = value.rstrip("/").rsplit("/", 1)[-1]
+
+    if value.startswith("@"):
+        return value
+    if value.lstrip("-").isdigit():
+        return int(value)
+    return value
+
+
+CHAT = resolve_chat(CHAT_ID)
 
 
 def normalize(name: str) -> str:
@@ -37,16 +55,10 @@ def load_captions() -> dict[str, str]:
         return {}
 
     captions: dict[str, str] = {}
-    blocks = re.split(
-        r"\n\s*-{4,}\s*\n",
-        path.read_text(encoding="utf-8"),
-    )
+    blocks = re.split(r"\n\s*-{4,}\s*\n", path.read_text(encoding="utf-8"))
 
     for block in blocks:
-        match = re.search(
-            r"File name</b>\s*[–-]\s*([^\n]+)",
-            block,
-        )
+        match = re.search(r"File name</b>\s*[–-]\s*([^\n]+)", block)
         if not match:
             continue
 
@@ -82,11 +94,7 @@ def release_files() -> list[str]:
     return sorted(glob.glob("dl/*.apk") + glob.glob("dl/*.exe"))
 
 
-async def upload_file(
-    client: TelegramClient,
-    path: str,
-    caption: str,
-) -> bool:
+async def upload_file(client: TelegramClient, path: str, caption: str) -> bool:
     """Upload one file with retry and FloodWait handling."""
     name = Path(path).name
 
@@ -123,18 +131,20 @@ async def main() -> None:
 
     captions = load_captions()
 
-    async with TelegramClient(
-        StringSession(SESSION),
-        API_ID,
-        API_HASH,
-    ) as client:
+    async with TelegramClient(StringSession(SESSION), API_ID, API_HASH) as client:
+        try:
+            chat = await client.get_entity(CHAT)
+        except Exception as error:
+            raise SystemExit(
+                "Cannot access Telegram destination. Check TELEGRAM_CHAT_ID and "
+                "make sure the account used by TELEGRAM_SESSION can access that chat. "
+                f"Configured destination: {CHAT!r}. Error: {error}"
+            ) from error
+
         existing: set[str] = set()
 
         if DEDUP_SCAN_LIMIT:
-            async for message in client.iter_messages(
-                CHAT,
-                limit=DEDUP_SCAN_LIMIT,
-            ):
+            async for message in client.iter_messages(chat, limit=DEDUP_SCAN_LIMIT):
                 if message.file and message.file.name:
                     existing.add(message.file.name)
 
@@ -157,10 +167,7 @@ async def main() -> None:
             else:
                 failed.append(name)
 
-    print(
-        "\nTelegram summary: "
-        f"{uploaded} uploaded, {skipped} skipped, {len(failed)} failed."
-    )
+    print(f"\nTelegram summary: {uploaded} uploaded, {skipped} skipped, {len(failed)} failed.")
 
     if failed:
         print("Failed:")
