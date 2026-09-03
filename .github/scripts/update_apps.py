@@ -50,10 +50,8 @@ def apk_version(path: Path) -> str:
 
 
 def filename_version(name: str) -> str:
-    match = re.search(r"(?:^|[-_])v?([0-9]+(?:[._-][0-9A-Za-z]+){1,6})(?:[-_][A-Za-z]+)?\.exe$", name, re.I)
-    if match:
-        return match.group(1).replace("_", ".")
-    match = re.search(r"(?:^|[-_])([0-9]+\.[0-9]+(?:\.[0-9]+){0,3})(?:[-_]|\.)", name)
+    """Extract a version-like value from an executable filename as a fallback."""
+    match = re.search(r"(?:^|[-_])v?([0-9]+(?:\.[0-9]+){1,5})(?:[-_][A-Za-z][A-Za-z0-9.-]*)?\.exe$", name, re.I)
     return match.group(1) if match else ""
 
 
@@ -114,7 +112,9 @@ def process_app(app: dict, old_versions: dict[str, str]) -> tuple[str, dict | tu
             if not version:
                 return "failed", (name, f"could not read APK versionName from {source.name}")
         else:
-            version = filename_version(source.name) or tag.lstrip("v")
+            # Release tags are the canonical version for EXE releases. Only fall
+            # back to the filename when the tag is missing or clearly unusable.
+            version = tag.lstrip("v").strip() or filename_version(source.name)
         if not version:
             return "failed", (name, f"could not determine version from {source.name}")
         previous = old_versions.get(name, "")
