@@ -50,51 +50,15 @@ jobs:
         run: python3 .github/scripts/validate_apps.py
 
       # ─────────────────────────────────────────────────────────────
-      # Scheduling
-      # ─────────────────────────────────────────────────────────────
-      - name: 📅 Weekly random-day gate
-        id: gate
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          WEEK=$(date +%Y-%U)
-          TODAY=$(date +%w)
-          STORED_WEEK=""
-          STORED_DAY=""
-
-          if [[ -f .run_week ]]; then
-            STORED_WEEK=$(cut -d: -f1 .run_week)
-            STORED_DAY=$(cut -d: -f2 .run_week)
-          fi
-
-          if [[ "$STORED_WEEK" != "$WEEK" ]]; then
-            STORED_DAY=$((RANDOM % 7))
-            echo "$WEEK:$STORED_DAY" > .run_week
-            echo "New random run day: $STORED_DAY"
-          else
-            echo "Using stored run day: $STORED_DAY"
-          fi
-
-          if [[ "$TODAY" != "$STORED_DAY" && "${{ github.event_name }}" != "workflow_dispatch" ]]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Not the selected day. Nothing to do."
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      # ─────────────────────────────────────────────────────────────
       # Download + processing
       # ─────────────────────────────────────────────────────────────
       - name: 📦 Download & process all apps
-        if: steps.gate.outputs.run == 'true'
         run: python3 .github/scripts/update_apps.py
 
       # ─────────────────────────────────────────────────────────────
       # Release metadata
       # ─────────────────────────────────────────────────────────────
       - name: 🧾 Prepare release metadata
-        if: steps.gate.outputs.run == 'true'
         run: |
           python3 .github/scripts/prepare_release.py
 
@@ -106,14 +70,14 @@ jobs:
           cat .update-results.json
 
       - name: ⏹️ Stop when there are no updates
-        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES != 'true'
+        if: env.HAS_UPDATES != 'true'
         run: echo "No new app versions. No release will be created."
 
       # ─────────────────────────────────────────────────────────────
       # GitHub Release
       # ─────────────────────────────────────────────────────────────
       - name: 🚀 Create GitHub Release
-        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
+        if: env.HAS_UPDATES == 'true'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: android-apps-${{ github.run_id }}
@@ -128,7 +92,7 @@ jobs:
       # Repository state
       # ─────────────────────────────────────────────────────────────
       - name: 📝 Commit update state
-        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
+        if: env.HAS_UPDATES == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         shell: bash
