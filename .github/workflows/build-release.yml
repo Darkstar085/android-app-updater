@@ -84,29 +84,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y aapt gh
-      - name: Weekly random day gate
-        run: |
-          WEEK=$(date +%Y-%U)
 
-          if [ -f .run_week ]; then
-          STORED_WEEK=$(cut -d: -f1 .run_week)
-          STORED_DAY=$(cut -d: -f2 .run_week)
-          fi
-
-          if [ "$STORED_WEEK" != "$WEEK" ]; then
-          STORED_DAY=$((RANDOM % 7))
-          echo "$WEEK:$STORED_DAY" > .run_week
-          echo "Random run day this week: $STORED_DAY"
-          else
-          echo "Using stored day: $STORED_DAY"
-          fi
-
-          TODAY=$(date +%w)
-
-          if [ "$TODAY" != "$STORED_DAY" ]; then
-          echo "Not today's random day → exiting"
-          exit 0
-          fi
       - name: Download all apps
         run: |
           set +e
@@ -813,12 +791,11 @@ jobs:
           📁 Updated files:
           - latest-apk-versions.txt
           - captions.txt
-          - .run_week
 
           🤖 Automated by GitHub Actions
           EOF
           )
 
-          git add latest-apk-versions.txt captions.txt .run_week
+          git add latest-apk-versions.txt captions.txt
           git commit -m "📦 Prebuilts Update — ${COMMIT_DATE} [skip ci]" -m "$COMMIT_BODY" || echo "No changes to commit"
           git push origin main
