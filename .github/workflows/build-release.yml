@@ -29,9 +29,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ─────────────────────────────────────────────────────────────
-      # Setup
-      # ─────────────────────────────────────────────────────────────
       - name: 📥 Checkout repository
         uses: actions/checkout@v5
 
@@ -49,9 +46,6 @@ jobs:
       - name: 🔎 Validate app configuration
         run: python3 .github/scripts/validate_apps.py
 
-      # ─────────────────────────────────────────────────────────────
-      # Scheduling
-      # ─────────────────────────────────────────────────────────────
       - name: 📅 Weekly random-day gate
         id: gate
         shell: bash
@@ -83,21 +77,14 @@ jobs:
             echo "run=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # ─────────────────────────────────────────────────────────────
-      # Download + processing
-      # ─────────────────────────────────────────────────────────────
       - name: 📦 Download & process all apps
         if: steps.gate.outputs.run == 'true'
         run: python3 .github/scripts/update_apps.py
 
-      # ─────────────────────────────────────────────────────────────
-      # Release metadata
-      # ─────────────────────────────────────────────────────────────
       - name: 🧾 Prepare release metadata
         if: steps.gate.outputs.run == 'true'
         run: |
           python3 .github/scripts/prepare_release.py
-
           echo ""
           echo "Updated apps: $UPDATED_COUNT"
           echo "Skipped: $SKIPPED_COUNT"
@@ -109,9 +96,6 @@ jobs:
         if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES != 'true'
         run: echo "No new app versions. No release will be created."
 
-      # ─────────────────────────────────────────────────────────────
-      # GitHub Release
-      # ─────────────────────────────────────────────────────────────
       - name: 🚀 Create GitHub Release
         if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
         uses: softprops/action-gh-release@v3
@@ -124,11 +108,8 @@ jobs:
             *_v*.exe
             captions.txt
 
-      # ─────────────────────────────────────────────────────────────
-      # Repository state
-      # ─────────────────────────────────────────────────────────────
-      - name: 📝 Commit update state
-        if: steps.gate.outputs.run == 'true' && env.HAS_UPDATES == 'true'
+      - name: 📝 Save updater state
+        if: ${{ always() && steps.gate.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         shell: bash
@@ -137,30 +118,29 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .run_week
+
+          if [[ "${{ steps.gate.outputs.run }}" == "true" && "${HAS_UPDATES:-false}" == "true" ]]; then
+            git add latest-apk-versions.txt captions.txt
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No updater state changes to commit."
+            exit 0
+          fi
 
           export TZ=Asia/Kolkata
           DATE=$(date +'%Y-%m-%d')
           TIME=$(date +'%H:%M IST')
 
-          cat > commit-body.md <<EOF
-          📦 Android App Updater
+          if [[ "${HAS_UPDATES:-false}" == "true" ]]; then
+            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n' "$DATE" "$TIME" > commit-body.md
+            printf '✅ Updated apps (%s):\n%s\n\n' "$UPDATED_COUNT" "$UPDATED_LIST" >> commit-body.md
+          else
+            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n📅 Saved the weekly random-day schedule.\n\n' "$DATE" "$TIME" > commit-body.md
+          fi
 
-          📅 Date: $DATE
-          🕐 Time: $TIME
+          printf '⚠️ Download failures: %s\n⏭️ Skipped/unchanged: %s\n\n🤖 Automated by GitHub Actions\n\nSigned-off-by: S I P U N <sipunkumar85@gmail.com>\n' "${FAILED_COUNT:-0}" "${SKIPPED_COUNT:-0}" >> commit-body.md
 
-          ✅ Updated apps ($UPDATED_COUNT):
-          $UPDATED_LIST
-
-          ⚠️ Download failures: $FAILED_COUNT
-          ⏭️ Skipped/unchanged: $SKIPPED_COUNT
-
-          🤖 Automated by GitHub Actions
-          EOF
-
-          git add latest-apk-versions.txt captions.txt .run_week
-          git commit \
-            -m "📦 Android Apps Update — $DATE [skip ci]" \
-            -F commit-body.md \
-            || echo "No state changes to commit"
-
+          git commit -m "📦 Update Android app state — $DATE [skip ci]" -F commit-body.md
           git push origin main

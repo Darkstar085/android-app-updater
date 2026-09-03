@@ -29,9 +29,6 @@ jobs:
       TAG: android-apps-${{ github.event.workflow_run.id }}
 
     steps:
-      # ─────────────────────────────────────────────────────────────
-      # Setup
-      # ─────────────────────────────────────────────────────────────
       - name: 📥 Checkout repository
         uses: actions/checkout@v5
 
@@ -45,9 +42,6 @@ jobs:
             telethon \
             tgcrypto
 
-      # ─────────────────────────────────────────────────────────────
-      # Find release
-      # ─────────────────────────────────────────────────────────────
       - name: ⏳ Wait for release to become available
         id: release
         shell: bash
@@ -56,23 +50,20 @@ jobs:
 
           echo "Waiting for release: ${TAG}"
 
-          for attempt in $(seq 1 30); do
+          for attempt in $(seq 1 60); do
             if gh release view "$TAG" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
               echo "Release is available."
               echo "found=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
 
-            echo "Release not available yet (attempt ${attempt}/30). Sleeping 10s..."
+            echo "Release not available yet (attempt ${attempt}/60). Sleeping 10s..."
             sleep 10
           done
 
-          echo "No release was created for this successful build. Nothing to send."
+          echo "No release was created for this successful build after 10 minutes. Nothing to send."
           echo "found=false" >> "$GITHUB_OUTPUT"
 
-      # ─────────────────────────────────────────────────────────────
-      # Download release assets
-      # ─────────────────────────────────────────────────────────────
       - name: 📥 Download release assets
         if: steps.release.outputs.found == 'true'
         shell: bash
@@ -104,9 +95,6 @@ jobs:
           echo "Downloaded files:"
           printf ' - %s\n' "${files[@]}"
 
-      # ─────────────────────────────────────────────────────────────
-      # Telegram delivery
-      # ─────────────────────────────────────────────────────────────
       - name: 📲 Upload apps to Telegram
         if: steps.release.outputs.found == 'true'
         shell: bash
