@@ -51,17 +51,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           WEEK=$(date +%Y-%U)
           TODAY=$(date +%w)
           STORED_WEEK=""
           STORED_DAY=""
-
           if [[ -f .run_week ]]; then
             STORED_WEEK=$(cut -d: -f1 .run_week)
             STORED_DAY=$(cut -d: -f2 .run_week)
           fi
-
           if [[ "$STORED_WEEK" != "$WEEK" ]]; then
             STORED_DAY=$((RANDOM % 7))
             echo "$WEEK:$STORED_DAY" > .run_week
@@ -69,7 +66,6 @@ jobs:
           else
             echo "Using stored run day: $STORED_DAY"
           fi
-
           if [[ "$TODAY" != "$STORED_DAY" && "${{ github.event_name }}" != "workflow_dispatch" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "Not the selected day. Nothing to do."
@@ -115,13 +111,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .run_week
 
+          # prepare_release.py cleans stale entries even when nothing was updated.
+          # Always stage the version state so that cleanup is persisted.
+          if [[ "${{ steps.gate.outputs.run }}" == "true" ]]; then
+            git add latest-apk-versions.txt
+          fi
+
           if [[ "${{ steps.gate.outputs.run }}" == "true" && "${HAS_UPDATES:-false}" == "true" ]]; then
-            git add latest-apk-versions.txt captions.txt
+            git add captions.txt
           fi
 
           if git diff --cached --quiet; then
@@ -137,10 +138,9 @@ jobs:
             printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n' "$DATE" "$TIME" > commit-body.md
             printf '✅ Updated apps (%s):\n%s\n\n' "$UPDATED_COUNT" "$UPDATED_LIST" >> commit-body.md
           else
-            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n📅 Saved the weekly random-day schedule.\n\n' "$DATE" "$TIME" > commit-body.md
+            printf '📦 Android App Updater\n\n📅 Date: %s\n🕐 Time: %s\n\n📅 Saved the weekly random-day schedule and cleaned version state.\n\n' "$DATE" "$TIME" > commit-body.md
           fi
 
           printf '⚠️ Download failures: %s\n⏭️ Skipped/unchanged: %s\n\n🤖 Automated by GitHub Actions\n\nSigned-off-by: S I P U N <sipunkumar85@gmail.com>\n' "${FAILED_COUNT:-0}" "${SKIPPED_COUNT:-0}" >> commit-body.md
-
           git commit -m "📦 Update Android app state — $DATE [skip ci]" -F commit-body.md
           git push origin main

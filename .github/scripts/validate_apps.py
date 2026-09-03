@@ -18,7 +18,6 @@ def main() -> None:
     apps = data.get("apps", [])
     errors: list[str] = []
     names: set[str] = set()
-    repos: set[str] = set()
 
     if not isinstance(apps, list) or not apps:
         raise SystemExit("Configuration errors:\n- apps must be a non-empty list")
@@ -36,9 +35,6 @@ def main() -> None:
         repo = app.get("repo", "")
         if not re.fullmatch(r"[^/]+/[^/]+", repo):
             errors.append(f"{name}: invalid repo {repo}")
-        elif repo in repos:
-            errors.append(f"{name}: duplicate repo {repo}")
-        repos.add(repo)
 
         patterns = app.get("patterns")
         excludes = app.get("exclude", [])
