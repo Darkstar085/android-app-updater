@@ -19,13 +19,7 @@ DOWNLOADS = ROOT / ".downloads"
 def run(*args: str, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess:
     """Run a command from the repository root and print it to the log."""
     print("$", " ".join(map(str, args)))
-    return subprocess.run(
-        args,
-        cwd=ROOT,
-        check=check,
-        text=True,
-        capture_output=capture,
-    )
+    return subprocess.run(args, cwd=ROOT, check=check, text=True, capture_output=capture)
 
 
 def github_json(args: list[str]) -> dict:
@@ -41,24 +35,43 @@ def matches(name: str, patterns: list[str], excludes: list[str]) -> bool:
     return allowed and not excluded
 
 
+def select_asset(assets: list[dict], patterns: list[str], excludes: list[str]) -> dict | None:
+    """Select one asset deterministically using configured pattern priority."""
+    for pattern in patterns:
+        candidates = sorted(
+            (
+                asset
+                for asset in assets
+                if fnmatch.fnmatch(asset.get("name", ""), pattern)
+                and not any(
+                    fnmatch.fnmatch(asset.get("name", ""), exclude)
+                    for exclude in excludes
+                )
+            ),
+            key=lambda asset: asset.get("name", ""),
+        )
+        if candidates:
+            if len(candidates) > 1:
+                names = ", ".join(asset.get("name", "") for asset in candidates)
+                print(
+                    f"⚠️ Pattern {pattern!r} matched multiple assets; "
+                    f"using the first deterministic filename match: {names}"
+                )
+            return candidates[0]
+    return None
+
+
 def apk_version(path: Path) -> str:
     """Read versionName from an APK using aapt."""
-    result = run(
-        "aapt",
-        "dump",
-        "badging",
-        str(path),
-        check=False,
-    )
+    result = run("aapt", "dump", "badging", str(path), check=False)
     match = re.search(r"versionName='([^']+)'", result.stdout or "")
     return match.group(1).strip() if match else ""
 
 
 def filename_version(name: str) -> str:
-    """Extract a version-like value from an APK/EXE filename."""
+    """Extract a version-like value from an EXE filename."""
     match = re.search(
-        r"(?:^|[-_])v?([0-9]+(?:[._-][0-9A-Za-z]+){1,6})"
-        r"(?:[-_][A-Za-z]+)?\.(?:apk|exe)$",
+        r"(?:^|[-_])v?([0-9]+(?:[._-][0-9A-Za-z]+){1,6})(?:[-_][A-Za-z]+)?\.(?:exe)$",
         name,
         re.IGNORECASE,
     )
@@ -75,22 +88,22 @@ def filename_version(name: str) -> str:
 def read_versions(path: Path) -> dict[str, str]:
     """Read stored app versions from a simple key/value file."""
     versions: dict[str, str] = {}
-
     if not path.exists():
         return versions
 
     for line in path.read_text(encoding="utf-8").splitlines():
         if ":" in line:
             key, value = line.split(":", 1)
-            versions[key.strip()] = value.strip()
-
+            key = key.strip()
+            value = value.strip()
+            if key and value and key != "*":
+                versions[key] = value
     return versions
 
 
 def clean_staging_area() -> None:
     """Remove previous staged release files without touching app downloads."""
     DOWNLOADS.mkdir(exist_ok=True)
-
     for path in ROOT.glob("*_v*.apk"):
         path.unlink()
     for path in ROOT.glob("*_v*.exe"):
@@ -101,7 +114,6 @@ def process_app(app: dict, old_versions: dict[str, str]) -> tuple[str, dict | tu
     """Process one configured app and return its result."""
     name = app["name"]
     repo = app["repo"]
-
     print(f"::group::{app['emoji']} {name} — {repo}")
     destination = DOWNLOADS / name
 
@@ -113,72 +125,40 @@ def process_app(app: dict, old_versions: dict[str, str]) -> tuple[str, dict | tu
         release = github_json([f"repos/{repo}/releases/latest"])
         tag = release.get("tag_name") or ""
         assets = release.get("assets") or []
-        candidates = [
-            asset
-            for asset in assets
-            if matches(
-                asset.get("name", ""),
-                app["patterns"],
-                app.get("exclude", []),
-            )
-        ]
+        asset = select_asset(assets, app["patterns"], app.get("exclude", []))
 
-        if not candidates:
+        if asset is None:
             print(f"⚠️ No matching asset. Patterns: {app['patterns']}")
             print("Available APK/EXE assets:")
-            for asset in assets:
-                asset_name = asset.get("name", "")
+            for candidate in assets:
+                asset_name = candidate.get("name", "")
                 if asset_name.lower().endswith((".apk", ".exe")):
                     print(f" - {asset_name}")
             return "skipped", (name, "no matching release asset")
 
-        # Prefer the largest matching asset when multiple variants remain.
-        candidates.sort(
-            key=lambda asset: (asset.get("size", 0), asset.get("name", "")),
-            reverse=True,
-        )
-        asset = candidates[0]
         asset_name = asset["name"]
         print(f"Selected: {asset_name} (release {tag})")
-
         result = run(
-            "gh",
-            "release",
-            "download",
-            tag,
-            "--repo",
-            repo,
-            "--pattern",
-            asset_name,
-            "--dir",
-            str(destination),
-            "--clobber",
-            check=False,
+            "gh", "release", "download", tag, "--repo", repo,
+            "--pattern", asset_name, "--dir", str(destination), "--clobber", check=False,
         )
-
         if result.returncode != 0:
             return "failed", (name, "download failed")
 
         downloaded = [path for path in destination.iterdir() if path.is_file()]
         if len(downloaded) != 1:
-            return "failed", (
-                name,
-                f"expected 1 downloaded file, found {len(downloaded)}",
-            )
+            return "failed", (name, f"expected 1 downloaded file, found {len(downloaded)}")
 
         source = downloaded[0]
-        version = (
-            apk_version(source)
-            if source.suffix.lower() == ".apk"
-            else filename_version(source.name)
-        )
-        version = version or tag.lstrip("v")
+        if source.suffix.lower() == ".apk":
+            version = apk_version(source)
+            if not version:
+                return "failed", (name, f"could not read APK versionName from {source.name}")
+        else:
+            version = filename_version(source.name) or tag.lstrip("v")
 
         if not version:
-            return "failed", (
-                name,
-                f"could not determine version from {source.name}",
-            )
+            return "failed", (name, f"could not determine version from {source.name}")
 
         previous = old_versions.get(name, "")
         if previous and previous == version:
@@ -186,23 +166,16 @@ def process_app(app: dict, old_versions: dict[str, str]) -> tuple[str, dict | tu
 
         extension = source.suffix.lower()
         final_path = ROOT / f"{name}_v{version}{extension}"
-
         if final_path.exists():
             final_path.unlink()
         shutil.move(str(source), str(final_path))
 
         item = {
-            "name": name,
-            "old": previous,
-            "new": version,
-            "file": final_path.name,
-            "emoji": app["emoji"],
-            "description": app["description"],
-            "changelog": app["changelog"],
+            "name": name, "old": previous, "new": version, "file": final_path.name,
+            "emoji": app["emoji"], "description": app["description"], "changelog": app["changelog"],
         }
         print(f"✅ {name}: {previous or 'new'} → {version}")
         return "updated", item
-
     except Exception as exc:  # noqa: BLE001 - one app must not stop the batch.
         print(f"❌ {name}: {exc}")
         return "failed", (name, str(exc))
@@ -212,31 +185,21 @@ def process_app(app: dict, old_versions: dict[str, str]) -> tuple[str, dict | tu
 
 def write_results(updated: list[dict], skipped: list[tuple], failed: list[tuple]) -> None:
     """Write machine-readable results and GitHub environment values."""
-    results = {
-        "updated": updated,
-        "skipped": skipped,
-        "failed": failed,
-    }
+    results = {"updated": updated, "skipped": skipped, "failed": failed}
     (ROOT / ".update-results.json").write_text(
-        json.dumps(results, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
+        json.dumps(results, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-
     with open(os.environ.get("GITHUB_ENV", os.devnull), "a", encoding="utf-8") as env:
         env.write(f"UPDATED_COUNT={len(updated)}\n")
         env.write(f"FAILED_COUNT={len(failed)}\n")
         env.write(f"SKIPPED_COUNT={len(skipped)}\n")
         env.write(f"HAS_UPDATES={'true' if updated else 'false'}\n")
-
         lines = []
         for item in updated:
-            if item["old"]:
-                lines.append(
-                    f"- {item['name']}: {item['old']} → {item['new']}"
-                )
-            else:
-                lines.append(f"- {item['name']}: {item['new']} (new)")
-
+            lines.append(
+                f"- {item['name']}: {item['old']} → {item['new']}"
+                if item["old"] else f"- {item['name']}: {item['new']} (new)"
+            )
         env.write("UPDATED_LIST<<EOF\n")
         env.write("\n".join(lines) + "\nEOF\n")
 
@@ -244,53 +207,32 @@ def write_results(updated: list[dict], skipped: list[tuple], failed: list[tuple]
 def write_summary(updated: list[dict], skipped: list[tuple], failed: list[tuple]) -> None:
     """Create the GitHub Actions step summary."""
     summary = [
-        "# 📦 Android App Updater",
-        "",
+        "# 📦 Android App Updater", "",
         f"**Updated:** {len(updated)}  ",
         f"**Skipped:** {len(skipped)}  ",
         f"**Failed:** {len(failed)}",
     ]
-
     if updated:
-        summary.extend(
-            [
-                "",
-                "## ✅ Updated apps",
-                "",
-                "| App | Previous | New | File |",
-                "|---|---:|---:|---|",
-            ]
-        )
-        summary.extend(
-            f"| {item['emoji']} {item['name']} | "
-            f"{item['old'] or '—'} | {item['new']} | `{item['file']}` |"
+        summary += ["", "## ✅ Updated apps", "", "| App | Previous | New | File |", "|---|---:|---:|---|"]
+        summary += [
+            f"| {item['emoji']} {item['name']} | {item['old'] or '—'} | {item['new']} | `{item['file']}` |"
             for item in updated
-        )
-
+        ]
     if failed:
-        summary.extend(["", "## ⚠️ Download failures", ""])
-        summary.extend(
-            f"- **{name}** — {reason}" for name, reason in failed
-        )
-
+        summary += ["", "## ⚠️ Download failures", ""]
+        summary += [f"- **{name}** — {reason}" for name, reason in failed]
     if skipped:
-        summary.extend(["", "## ⏭️ Skipped", ""])
-        summary.extend(
-            f"- **{name}** — {reason}" for name, reason in skipped
-        )
+        summary += ["", "## ⏭️ Skipped", ""]
+        summary += [f"- **{name}** — {reason}" for name, reason in skipped]
 
-    summary_path = Path(
-        os.environ.get("GITHUB_STEP_SUMMARY", ROOT / "run-summary.md")
-    )
+    summary_path = Path(os.environ.get("GITHUB_STEP_SUMMARY", ROOT / "run-summary.md"))
     summary_path.write_text("\n".join(summary) + "\n", encoding="utf-8")
 
 
 def main() -> None:
     clean_staging_area()
-
     old_versions = read_versions(ROOT / "latest-apk-versions.txt")
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-
     updated: list[dict] = []
     skipped: list[tuple] = []
     failed: list[tuple] = []
@@ -299,7 +241,6 @@ def main() -> None:
         result = process_app(app, old_versions)
         if result is None:
             continue
-
         status, value = result
         if status == "updated":
             updated.append(value)
@@ -310,17 +251,9 @@ def main() -> None:
 
     write_results(updated, skipped, failed)
     write_summary(updated, skipped, failed)
-
     if failed:
-        print(
-            "::warning::Some apps could not be downloaded; "
-            "the workflow will continue with successful apps."
-        )
-
-    print(
-        f"Summary: {len(updated)} updated, "
-        f"{len(skipped)} skipped, {len(failed)} failed"
-    )
+        print("::warning::Some apps could not be downloaded; the workflow will continue with successful apps.")
+    print(f"Summary: {len(updated)} updated, {len(skipped)} skipped, {len(failed)} failed")
 
 
 if __name__ == "__main__":
