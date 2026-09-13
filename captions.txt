@@ -1,12 +1,96 @@
-📦 <b>File name</b> – ABDownloadManager_v1.10.2.exe
+📦 <b>File name</b> – ABDownloadManager_v1.10.4.exe
     📥 Powerful download manager with multi-threading
-🆕 Version: 1.10.2
+🚀 Version: 1.10.2 → 1.10.4
 
 Changelog: <a href='https://github.com/amir1376/ab-download-manager/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Quantum_Download_Manager_v1.0.3.exe
-    📥 A modern, open-source download manager for Windows
-🆕 Version: 1.0.3
+📦 <b>File name</b> – Acode_v1.13.5.apk
+    💻 Lightweight yet powerful code editor
+🚀 Version: 1.13.3 → 1.13.5
 
-Changelog: <a href='https://github.com/PBhadoo/QDM/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/Acode-Foundation/Acode/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Kudu_v2.9.0.exe
+    🧹 Open-source system cleaner and security scanner for Windows, macOS and Linux
+🚀 Version: 2.7.0 → 2.9.0
+
+Changelog: <a href='https://github.com/AdventDevInc/kudu/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – SpotiFLAC_v4.9.6.apk
+    🎵 Open-source music player and lossless audio downloader for Android
+🚀 Version: 4.9.5 → 4.9.6
+
+Changelog: <a href='https://github.com/spotiflacapp/SpotiFLAC-Mobile/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – DuckDuckGo_v5.295.1.apk
+    🦆 Private, tracker-blocking browser
+🚀 Version: 5.294.1 → 5.295.1
+
+Changelog: <a href='https://github.com/duckduckgo/Android/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – MicroG_RE_v7.1.1.apk
+    🧩 MicroG RE - Enhanced Play Services compatibility
+🚀 Version: 7.1.0 → 7.1.1
+
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Momogram_v12.10.1-d225908548.apk
+    📱 Telegram client with privacy and customization features
+🚀 Version: 12.9.2-28fab50e21 → 12.10.1-d225908548
+
+Changelog: <a href='https://github.com/dic1911/Momogram/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_YouTube_v21.13.164.apk
+    🎬 YouTube with ad-block, background play, sponsor block and more
+🚀 Version: 21.07.247 → 21.13.164
+
+Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – GooglePhotos_v7.80.0.929302933.apk
+    📷 Google Photos with premium/unlocked features
+🚀 Version: 7.90.0.971743778 → 7.80.0.929302933
+
+Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Twitter_v12.24.0-prod.02.apk
+    🐦 Twitter with Piko enhancements
+🚀 Version: 12.22.0-prod.01 → 12.24.0-prod.02
+
+Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_MicroG_v7.1.1.apk
+    🧩 MicroG for Morphe - enables Google sign-in
+🚀 Version: 7.1.0 → 7.1.1
+
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_Manager_v1.30.0.apk
+    🛠️ Manage and install Morphe patches easily
+🚀 Version: 1.29.0 → 1.30.0
+
+Changelog: <a href='https://github.com/MorpheApp/morphe-manager/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Sdmaid_v2.1.0-rc0.apk
+    🧹 Powerful system cleaning tool
+🚀 Version: 2.0.4-rc0 → 2.1.0-rc0
+
+Changelog: <a href='https://github.com/d4rken-org/sdmaid-se/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – SimpMusic_v2.1.0.apk
+    🎵 Lightweight YT music player with Material You support
+🚀 Version: 2.0.0 → 2.1.0
+
+Changelog: <a href='https://github.com/maxrave-dev/SimpMusic/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – ThunderbirdAndroid_v23.0.apk
+    📧 Official Thunderbird email client for Android
+🚀 Version: 22.0 → 23.0
+
+Changelog: <a href='https://github.com/thunderbird/thunderbird-android/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Ytdlnis_v1.9.0.apk
+    ⬇️ YouTube downloader with advanced features
+🚀 Version: 1.8.9.1 → 1.9.0
+
+Changelog: <a href='https://github.com/deniscerri/ytdlnis/releases/latest'>Open</a>
     ----
