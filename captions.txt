@@ -1,72 +1,90 @@
-📦 <b>File name</b> – Kudu_v3.4.0.exe
+📦 <b>File name</b> – Kudu_v3.5.0.exe
     🧹 Open-source system cleaner and security scanner for Windows, macOS and Linux
-🚀 Version: 3.3.0 → 3.4.0
+🚀 Version: 3.4.0 → 3.5.0
 
 Changelog: <a href='https://github.com/AdventDevInc/kudu/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – SpotiFLAC_v5.0.5.apk
+📦 <b>File name</b> – SpotiFLAC_v5.0.7.apk
     🎵 Open-source music player and lossless audio downloader for Android
-🚀 Version: 4.9.6 → 5.0.5
+🚀 Version: 5.0.5 → 5.0.7
 
 Changelog: <a href='https://github.com/spotiflacapp/SpotiFLAC-Mobile/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – CpuInfo_v6.7.0.apk
-    💻 Detailed CPU info tool
-🚀 Version: 6.6.2 → 6.7.0
+📦 <b>File name</b> – OrganicMaps_v2026.09.29-32-Web.apk
+    🗺️ Privacy-focused offline maps and navigation app
+🚀 Version: 2026.08.27-18-Web → 2026.09.29-32-Web
 
-Changelog: <a href='https://github.com/kamgurgul/cpu-info/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/organicmaps/organicmaps/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – ReFra_v5.2.1.apk
-    📷 Jetpack Compose-based photo gallery app
-🚀 Version: 5.2.0 → 5.2.1
+📦 <b>File name</b> – Cherrygram_v12.10.6.apk
+    🍒 Enhanced Telegram client with extra features
+🚀 Version: 12.10.1 → 12.10.6
 
-Changelog: <a href='https://github.com/IacobIonut01/ReFra/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/arsLan4k1390/Cherrygram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – DuckDuckGo_v5.295.3.apk
+📦 <b>File name</b> – DeltaIcons_v2.20.0.apk
+    🎨 Beautiful, minimal icon pack
+🚀 Version: 2.19.0 → 2.20.0
+
+Changelog: <a href='https://github.com/Delta-Icons/android/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – DuckDuckGo_v5.296.0.apk
     🦆 Private, tracker-blocking browser
-🚀 Version: 5.295.2 → 5.295.3
+🚀 Version: 5.295.3 → 5.296.0
 
 Changelog: <a href='https://github.com/duckduckgo/Android/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – IceravenBrowser_viceraven-2.49.0.apk
+📦 <b>File name</b> – IceravenBrowser_viceraven-2.50.0.apk
     🦦 Privacy-focused web browser
-🚀 Version: iceraven-2.48.0 → iceraven-2.49.0
+🚀 Version: iceraven-2.49.0 → iceraven-2.50.0
 
 Changelog: <a href='https://github.com/fork-maintainers/iceraven-browser/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Momogram_v12.10.3-93fe5d7ca6.apk
+📦 <b>File name</b> – MicroG_RE_v7.2.1.apk
+    🧩 MicroG RE - Enhanced Play Services compatibility
+🚀 Version: 7.1.1 → 7.2.1
+
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Momogram_v12.10.5-d7e041d9ee.apk
     📱 Telegram client with privacy and customization features
-🚀 Version: 12.10.1-8edf9463a6 → 12.10.3-93fe5d7ca6
+🚀 Version: 12.10.3-93fe5d7ca6 → 12.10.5-d7e041d9ee
 
 Changelog: <a href='https://github.com/dic1911/Momogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_YouTube_v21.16.256.apk
-    🎬 YouTube with ad-block, background play, sponsor block and more
-🚀 Version: 21.13.164 → 21.16.256
+📦 <b>File name</b> – Nekogram_v12.10.6.apk
+    🐱 Feature-rich Telegram client with enhanced privacy
+🚀 Version: 12.10.3 → 12.10.6
 
-Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/Nekogram/Nekogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Twitter_v12.28.0-prod.01.apk
+📦 <b>File name</b> – PhonographPlus_v2.0.2.apk
+    🎧 Enhanced music player fork
+🚀 Version: 2.0.1 → 2.0.2
+
+Changelog: <a href='https://github.com/chr56/Phonograph_Plus/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Twitter_v12.29.1-prod.01.apk
     🐦 Twitter with Piko enhancements
-🚀 Version: 12.25.2-prod.01 → 12.28.0-prod.01
+🚀 Version: 12.28.0-prod.01 → 12.29.1-prod.01
 
 Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_Manager_v1.32.0.apk
+📦 <b>File name</b> – Morphe_MicroG_v7.2.1.apk
+    🧩 MicroG for Morphe - enables Google sign-in
+🚀 Version: 7.1.1 → 7.2.1
+
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_Manager_v1.33.0.apk
     🛠️ Manage and install Morphe patches easily
-🚀 Version: 1.31.1 → 1.32.0
+🚀 Version: 1.32.0 → 1.33.0
 
 Changelog: <a href='https://github.com/MorpheApp/morphe-manager/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – SimpMusic_v2.2.0.apk
-    🎵 Lightweight YT music player with Material You support
-🚀 Version: 2.1.0 → 2.2.0
+📦 <b>File name</b> – Sdmaid_v2.2.0-rc0.apk
+    🧹 Powerful system cleaning tool
+🚀 Version: 2.1.0-rc0 → 2.2.0-rc0
 
-Changelog: <a href='https://github.com/maxrave-dev/SimpMusic/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – ThunderbirdAndroid_v23.1.apk
-    📧 Official Thunderbird email client for Android
-🚀 Version: 23.0 → 23.1
-
-Changelog: <a href='https://github.com/thunderbird/thunderbird-android/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/d4rken-org/sdmaid-se/releases/latest'>Open</a>
     ----
