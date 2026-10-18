@@ -1,78 +1,60 @@
-📦 <b>File name</b> – ABDownloadManager_v1.11.0.exe
+📦 <b>File name</b> – ABDownloadManager_v1.11.1.exe
     📥 Powerful download manager with multi-threading
-🚀 Version: 1.10.4 → 1.11.0
+🚀 Version: 1.11.0 → 1.11.1
 
 Changelog: <a href='https://github.com/amir1376/ab-download-manager/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Kudu_v3.8.0.exe
+📦 <b>File name</b> – NopeRemote_v2.5.apk
+    📺 Open-source universal IR remote control app for Android
+🚀 Version: 2.4 → 2.5
+
+Changelog: <a href='https://github.com/monuk7735/nope-remote/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Kudu_v3.9.0.exe
     🧹 Open-source system cleaner and security scanner for Windows, macOS and Linux
-🚀 Version: 3.5.0 → 3.8.0
+🚀 Version: 3.8.0 → 3.9.0
 
 Changelog: <a href='https://github.com/AdventDevInc/kudu/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – SpotiFLAC_v5.1.1.apk
-    🎵 Open-source music player and lossless audio downloader for Android
-🚀 Version: 5.0.7 → 5.1.1
-
-Changelog: <a href='https://github.com/spotiflacapp/SpotiFLAC-Mobile/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Bitwarden_v2026.9.1.apk
+📦 <b>File name</b> – Bitwarden_v2026.10.0.apk
     🔑 Open-source password manager with cloud sync
-🚀 Version: 2026.9.0 → 2026.9.1
+🚀 Version: 2026.9.1 → 2026.10.0
 
 Changelog: <a href='https://github.com/bitwarden/android/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – ReFra_v5.2.2.apk
-    📷 Jetpack Compose-based photo gallery app
-🚀 Version: 5.2.1 → 5.2.2
-
-Changelog: <a href='https://github.com/IacobIonut01/ReFra/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – DuckDuckGo_v5.297.1.apk
+📦 <b>File name</b> – DuckDuckGo_v5.298.1.apk
     🦆 Private, tracker-blocking browser
-🚀 Version: 5.296.0 → 5.297.1
+🚀 Version: 5.297.1 → 5.298.1
 
 Changelog: <a href='https://github.com/duckduckgo/Android/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Fossify_MusicPlayer_v1.8.4.apk
-    🎶 Modern music player by Fossify
-🚀 Version: 1.8.1 → 1.8.4
+📦 <b>File name</b> – Momogram_v12.10.6-7ab167e618.apk
+    📱 Telegram client with privacy and customization features
+🚀 Version: 12.10.5-d7e041d9ee → 12.10.6-7ab167e618
 
-Changelog: <a href='https://github.com/FossifyOrg/Music-Player/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/dic1911/Momogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Fossify_VoiceRecorder_v1.7.3.apk
-    🎤 Simple, privacy-respecting voice recorder
-🚀 Version: 1.7.1 → 1.7.3
+📦 <b>File name</b> – Nekogram_v13.0.2.apk
+    🐱 Feature-rich Telegram client with enhanced privacy
+🚀 Version: 12.10.6 → 13.0.2
 
-Changelog: <a href='https://github.com/FossifyOrg/Voice-Recorder/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/Nekogram/Nekogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_YTMusic_v9.20.53.apk
-    🎵 YouTube Music with premium unlock, ad-block and advanced playback
-🚀 Version: 9.15.51 → 9.20.53
+📦 <b>File name</b> – Morphe_YouTube_v21.20.405.apk
+    🎬 YouTube with ad-block, background play, sponsor block and more
+🚀 Version: 21.16.256 → 21.20.405
 
 Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_Manager_v1.35.0.apk
-    🛠️ Manage and install Morphe patches easily
-🚀 Version: 1.33.0 → 1.35.0
+📦 <b>File name</b> – Twitter_v12.34.0-prod.01.apk
+    🐦 Twitter with Piko enhancements
+🚀 Version: 12.29.1-prod.01 → 12.34.0-prod.01
 
-Changelog: <a href='https://github.com/MorpheApp/morphe-manager/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Sdmaid_v2.2.1-rc0.apk
-    🧹 Powerful system cleaning tool
-🚀 Version: 2.2.0-rc0 → 2.2.1-rc0
+📦 <b>File name</b> – WeatherMaster_v3.11.0.apk
+    ☁️ Modern weather app with graphs
+🚀 Version: 3.10.6 → 3.11.0
 
-Changelog: <a href='https://github.com/d4rken-org/sdmaid-se/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – SimpMusic_v2.3.0.apk
-    🎵 Lightweight YT music player with Material You support
-🚀 Version: 2.2.0 → 2.3.0
-
-Changelog: <a href='https://github.com/maxrave-dev/SimpMusic/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – ThunderbirdAndroid_v24.0.apk
-    📧 Official Thunderbird email client for Android
-🚀 Version: 23.1 → 24.0
-
-Changelog: <a href='https://github.com/thunderbird/thunderbird-android/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/PranshulGG/WeatherMaster/releases/latest'>Open</a>
     ----
