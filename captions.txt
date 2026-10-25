@@ -1,60 +1,78 @@
-📦 <b>File name</b> – ABDownloadManager_v1.11.1.exe
-    📥 Powerful download manager with multi-threading
-🚀 Version: 1.11.0 → 1.11.1
-
-Changelog: <a href='https://github.com/amir1376/ab-download-manager/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – NopeRemote_v2.5.apk
-    📺 Open-source universal IR remote control app for Android
-🚀 Version: 2.4 → 2.5
-
-Changelog: <a href='https://github.com/monuk7735/nope-remote/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Kudu_v3.9.0.exe
+📦 <b>File name</b> – Kudu_v3.10.0.exe
     🧹 Open-source system cleaner and security scanner for Windows, macOS and Linux
-🚀 Version: 3.8.0 → 3.9.0
+🚀 Version: 3.9.0 → 3.10.0
 
 Changelog: <a href='https://github.com/AdventDevInc/kudu/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Bitwarden_v2026.10.0.apk
-    🔑 Open-source password manager with cloud sync
-🚀 Version: 2026.9.1 → 2026.10.0
-
-Changelog: <a href='https://github.com/bitwarden/android/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – DuckDuckGo_v5.298.1.apk
+📦 <b>File name</b> – DuckDuckGo_v5.299.0.apk
     🦆 Private, tracker-blocking browser
-🚀 Version: 5.297.1 → 5.298.1
+🚀 Version: 5.298.1 → 5.299.0
 
 Changelog: <a href='https://github.com/duckduckgo/Android/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Momogram_v12.10.6-7ab167e618.apk
+📦 <b>File name</b> – Fossify_MusicPlayer_v1.8.5.apk
+    🎶 Modern music player by Fossify
+🚀 Version: 1.8.4 → 1.8.5
+
+Changelog: <a href='https://github.com/FossifyOrg/Music-Player/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Fossify_VoiceRecorder_v1.7.4.apk
+    🎤 Simple, privacy-respecting voice recorder
+🚀 Version: 1.7.3 → 1.7.4
+
+Changelog: <a href='https://github.com/FossifyOrg/Voice-Recorder/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – IceravenBrowser_viceraven-2.51.0.apk
+    🦦 Privacy-focused web browser
+🚀 Version: iceraven-2.50.0 → iceraven-2.51.0
+
+Changelog: <a href='https://github.com/fork-maintainers/iceraven-browser/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – MicroG_RE_v7.2.2.apk
+    🧩 MicroG RE - Enhanced Play Services compatibility
+🚀 Version: 7.2.1 → 7.2.2
+
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Momogram_v13.0.3-db743ddceb.apk
     📱 Telegram client with privacy and customization features
-🚀 Version: 12.10.5-d7e041d9ee → 12.10.6-7ab167e618
+🚀 Version: 12.10.6-7ab167e618 → 13.0.3-db743ddceb
 
 Changelog: <a href='https://github.com/dic1911/Momogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Nekogram_v13.0.2.apk
+📦 <b>File name</b> – Nekogram_v13.0.3.apk
     🐱 Feature-rich Telegram client with enhanced privacy
-🚀 Version: 12.10.6 → 13.0.2
+🚀 Version: 13.0.2 → 13.0.3
 
 Changelog: <a href='https://github.com/Nekogram/Nekogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_YouTube_v21.20.405.apk
-    🎬 YouTube with ad-block, background play, sponsor block and more
-🚀 Version: 21.16.256 → 21.20.405
-
-Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Twitter_v12.34.0-prod.01.apk
+📦 <b>File name</b> – Twitter_v12.37.2-prod.01.apk
     🐦 Twitter with Piko enhancements
-🚀 Version: 12.29.1-prod.01 → 12.34.0-prod.01
+🚀 Version: 12.34.0-prod.01 → 12.37.2-prod.01
 
 Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – WeatherMaster_v3.11.0.apk
-    ☁️ Modern weather app with graphs
-🚀 Version: 3.10.6 → 3.11.0
+📦 <b>File name</b> – Morphe_MicroG_v7.2.2.apk
+    🧩 MicroG for Morphe - enables Google sign-in
+🚀 Version: 7.2.1 → 7.2.2
 
-Changelog: <a href='https://github.com/PranshulGG/WeatherMaster/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_Manager_v2.1.0.apk
+    🛠️ Manage and install Morphe patches easily
+🚀 Version: 1.35.0 → 2.1.0
+
+Changelog: <a href='https://github.com/MorpheApp/morphe-manager/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Sdmaid_v2.2.2-rc0.apk
+    🧹 Powerful system cleaning tool
+🚀 Version: 2.2.1-rc0 → 2.2.2-rc0
+
+Changelog: <a href='https://github.com/d4rken-org/sdmaid-se/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Ytdlnis_v1.9.1.1.apk
+    ⬇️ YouTube downloader with advanced features
+🚀 Version: 1.9.0 → 1.9.1.1
+
+Changelog: <a href='https://github.com/deniscerri/ytdlnis/releases/latest'>Open</a>
     ----
