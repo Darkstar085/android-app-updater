@@ -1,78 +1,96 @@
-📦 <b>File name</b> – Kudu_v3.10.0.exe
+📦 <b>File name</b> – ABDownloadManager_v1.11.2.exe
+    📥 Powerful download manager with multi-threading
+🚀 Version: 1.11.1 → 1.11.2
+
+Changelog: <a href='https://github.com/amir1376/ab-download-manager/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – NopeRemote_v2.6.apk
+    📺 Open-source universal IR remote control app for Android
+🚀 Version: 2.5 → 2.6
+
+Changelog: <a href='https://github.com/monuk7735/nope-remote/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Kudu_v3.11.0.exe
     🧹 Open-source system cleaner and security scanner for Windows, macOS and Linux
-🚀 Version: 3.9.0 → 3.10.0
+🚀 Version: 3.10.0 → 3.11.0
 
 Changelog: <a href='https://github.com/AdventDevInc/kudu/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – DuckDuckGo_v5.299.0.apk
+📦 <b>File name</b> – Bitwarden_v2026.10.1.apk
+    🔑 Open-source password manager with cloud sync
+🚀 Version: 2026.10.0 → 2026.10.1
+
+Changelog: <a href='https://github.com/bitwarden/android/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Cherrygram_v13.1.1.apk
+    🍒 Enhanced Telegram client with extra features
+🚀 Version: 12.10.6 → 13.1.1
+
+Changelog: <a href='https://github.com/arsLan4k1390/Cherrygram/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – DeltaIcons_v2.21.0.apk
+    🎨 Beautiful, minimal icon pack
+🚀 Version: 2.20.0 → 2.21.0
+
+Changelog: <a href='https://github.com/Delta-Icons/android/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – DuckDuckGo_v5.300.0.apk
     🦆 Private, tracker-blocking browser
-🚀 Version: 5.298.1 → 5.299.0
+🚀 Version: 5.299.0 → 5.300.0
 
 Changelog: <a href='https://github.com/duckduckgo/Android/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Fossify_MusicPlayer_v1.8.5.apk
-    🎶 Modern music player by Fossify
-🚀 Version: 1.8.4 → 1.8.5
-
-Changelog: <a href='https://github.com/FossifyOrg/Music-Player/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Fossify_VoiceRecorder_v1.7.4.apk
-    🎤 Simple, privacy-respecting voice recorder
-🚀 Version: 1.7.3 → 1.7.4
-
-Changelog: <a href='https://github.com/FossifyOrg/Voice-Recorder/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – IceravenBrowser_viceraven-2.51.0.apk
+📦 <b>File name</b> – IceravenBrowser_viceraven-2.52.0.apk
     🦦 Privacy-focused web browser
-🚀 Version: iceraven-2.50.0 → iceraven-2.51.0
+🚀 Version: iceraven-2.51.0 → iceraven-2.52.0
 
 Changelog: <a href='https://github.com/fork-maintainers/iceraven-browser/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – MicroG_RE_v7.2.2.apk
+📦 <b>File name</b> – Magisk_v31.1.apk
+    🪄 Powerful systemless rooting solution
+🚀 Version: 30.7 → 31.1
+
+Changelog: <a href='https://github.com/topjohnwu/Magisk/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – MicroG_RE_v7.3.0.apk
     🧩 MicroG RE - Enhanced Play Services compatibility
-🚀 Version: 7.2.1 → 7.2.2
+🚀 Version: 7.2.2 → 7.3.0
 
 Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Momogram_v13.0.3-db743ddceb.apk
-    📱 Telegram client with privacy and customization features
-🚀 Version: 12.10.6-7ab167e618 → 13.0.3-db743ddceb
-
-Changelog: <a href='https://github.com/dic1911/Momogram/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Nekogram_v13.0.3.apk
+📦 <b>File name</b> – Nekogram_v13.1.1.apk
     🐱 Feature-rich Telegram client with enhanced privacy
-🚀 Version: 13.0.2 → 13.0.3
+🚀 Version: 13.0.3 → 13.1.1
 
 Changelog: <a href='https://github.com/Nekogram/Nekogram/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Twitter_v12.37.2-prod.01.apk
-    🐦 Twitter with Piko enhancements
-🚀 Version: 12.34.0-prod.01 → 12.37.2-prod.01
+📦 <b>File name</b> – Morphe_YouTube_v21.30.216.apk
+    🎬 YouTube with ad-block, background play, sponsor block and more
+🚀 Version: 21.20.405 → 21.30.216
 
 Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_MicroG_v7.2.2.apk
+📦 <b>File name</b> – Morphe_YTMusic_v9.30.53.apk
+    🎵 YouTube Music with premium unlock, ad-block and advanced playback
+🚀 Version: 9.20.53 → 9.30.53
+
+Changelog: <a href='https://github.com/j-hc/revanced-magisk-module/releases/latest'>Open</a>
+    ----
+📦 <b>File name</b> – Morphe_MicroG_v7.3.0.apk
     🧩 MicroG for Morphe - enables Google sign-in
-🚀 Version: 7.2.1 → 7.2.2
+🚀 Version: 7.2.2 → 7.3.0
 
 Changelog: <a href='https://github.com/WSTxda/MicroG-RE/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Morphe_Manager_v2.1.0.apk
+📦 <b>File name</b> – Morphe_Manager_v2.3.0.apk
     🛠️ Manage and install Morphe patches easily
-🚀 Version: 1.35.0 → 2.1.0
+🚀 Version: 2.1.0 → 2.3.0
 
 Changelog: <a href='https://github.com/MorpheApp/morphe-manager/releases/latest'>Open</a>
     ----
-📦 <b>File name</b> – Sdmaid_v2.2.2-rc0.apk
-    🧹 Powerful system cleaning tool
-🚀 Version: 2.2.1-rc0 → 2.2.2-rc0
+📦 <b>File name</b> – SimpMusic_v2.5.0.apk
+    🎵 Lightweight YT music player with Material You support
+🚀 Version: 2.3.0 → 2.5.0
 
-Changelog: <a href='https://github.com/d4rken-org/sdmaid-se/releases/latest'>Open</a>
-    ----
-📦 <b>File name</b> – Ytdlnis_v1.9.1.1.apk
-    ⬇️ YouTube downloader with advanced features
-🚀 Version: 1.9.0 → 1.9.1.1
-
-Changelog: <a href='https://github.com/deniscerri/ytdlnis/releases/latest'>Open</a>
+Changelog: <a href='https://github.com/maxrave-dev/SimpMusic/releases/latest'>Open</a>
     ----
